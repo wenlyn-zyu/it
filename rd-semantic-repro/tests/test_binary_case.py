@@ -4,7 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from src.binary_case import classification_rd_infinite, gaussian_q, sample_rd_infinite_curve, save_rd_infinite_curve_csv
+from src.binary_case import (
+    classification_rd_infinite,
+    gaussian_q,
+    sample_rd_infinite_curve,
+    save_rd_infinite_curve_csv,
+)
 
 
 def test_gaussian_q_matches_known_value_at_one():
@@ -51,3 +56,9 @@ def test_save_curve_csv_writes_header_and_requested_number_of_rows(tmp_path: Pat
     rows = list(csv.reader(output_path.open("r", encoding="utf-8")))
     assert rows[0] == ["Ds", "rate_bits"]
     assert len(rows) == 6
+
+
+def test_better_class_separation_reduces_left_endpoint_distortion():
+    points_low = sample_rd_infinite_curve(A=0.5, sigma=1.0, num_points=5)
+    points_high = sample_rd_infinite_curve(A=2.0, sigma=1.0, num_points=5)
+    assert points_high[0][0] < points_low[0][0]

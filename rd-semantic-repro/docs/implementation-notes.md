@@ -95,3 +95,12 @@ The plotting script uses the saved CSV rather than recomputing the curve inline.
 - later improvements to the interior formula can reuse the same output contract.
 
 This makes the workflow closer to a reproducible research pipeline rather than a one-off script.
+## 11. Why we next compare multiple A/sigma settings
+In the binary classification case, the quantity `A/\sigma` controls how well separated the two class-conditional observations are.
+
+- larger `A/\sigma` means easier semantic inference;
+- smaller `A/\sigma` means more overlap and a larger Bayes error.
+
+So plotting multiple curves for different class separations is a natural next step. It lets us observe how the feasible semantic distortion region shifts as semantic ambiguity changes.
+
+This is already useful for the final report because it moves us from a single example curve to a comparative figure family.

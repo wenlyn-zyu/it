@@ -108,3 +108,13 @@ The current workflow is:
 4. later replace the staged interior formula with a closer numerical implementation while keeping the same experiment interface.
 
 This is an important implementation choice. It means the experiment pipeline can stabilize early, even while the interior mathematics is still being improved.
+
+## 7. Current comparative artifact set
+We now have two levels of binary-case artifacts:
+
+1. a single reference curve for A=1, sigma=1;
+2. a comparative curve family for multiple class separations.
+
+The comparative plot is especially useful because it begins to show a research-style message rather than a single sanity check: semantic difficulty changes the feasible distortion region.
+
+At this stage, the exact interior formula is still part of a staged implementation, but the comparison pipeline itself is already stable and report-ready.
