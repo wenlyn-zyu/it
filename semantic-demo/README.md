@@ -37,3 +37,13 @@ The intended comparison is:
 - **task-oriented**: representation learned directly for the label prediction task under a similar bottleneck budget.
 
 If the task-oriented method performs better at the same reduced dimension, that supports the semantic-communication intuition behind the paper.
+
+
+## 5. Current comparison result
+We now generate a small comparison table across multiple bottleneck dimensions.
+
+The current result already shows the desired qualitative trend:
+- at small bottleneck sizes, the task-oriented supervised projection clearly outperforms the task-agnostic PCA baseline;
+- as the bottleneck grows, the gap narrows, but the task-oriented method remains competitive or slightly better.
+
+This is a useful supporting result for the project because it translates the semantic-information intuition into a compact empirical story: under constrained representation budgets, task-aware compression can be more effective than generic compression.

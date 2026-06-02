@@ -43,3 +43,16 @@ def run_supervised_projection_baseline(n_components: int = 16, random_state: int
         "accuracy": float(accuracy),
         "input_dim": int(X_train.shape[1]),
     }
+
+
+def compare_methods_across_dimensions(dimensions, random_state: int = 0):
+    rows = []
+    for dim in dimensions:
+        baseline = run_pca_logistic_baseline(n_components=dim, random_state=random_state)
+        baseline["requested_n_components"] = dim
+        rows.append(baseline)
+
+        task_oriented = run_supervised_projection_baseline(n_components=dim, random_state=random_state)
+        task_oriented["requested_n_components"] = dim
+        rows.append(task_oriented)
+    return rows

@@ -53,3 +53,11 @@ Why this is a meaningful next step:
 - the comparison is lightweight enough to run quickly on the server while still illustrating the semantic idea.
 
 This is not yet a deep semantic communication model, but it already captures the contrast we care about: a representation optimized for the task can differ from one optimized only for generic signal structure.
+## 6. Why we now compare multiple bottleneck dimensions
+A single bottleneck size is enough to show the idea, but not enough to make a strong experimental argument.
+
+To make the demo more report-friendly, we now compare methods across multiple requested dimensions. This helps answer a more meaningful question:
+
+> how does task-aware compression behave as the communication budget changes?
+
+That is much closer to the language of rate-distortion tradeoffs, even though this demo still uses practical feature dimensions rather than a formal information rate.
