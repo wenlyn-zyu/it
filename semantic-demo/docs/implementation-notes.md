@@ -31,3 +31,15 @@ In plain language: if the destination wants a label, we should not spend all our
 
 ## 5. Why this track remains secondary
 This demo is intentionally auxiliary because the EE142 project sits in an information theory course. The theory-first reproduction remains the main contribution. This demo is there to strengthen intuition and presentation quality, not to replace the original mathematics.
+
+
+## 6. Why the first baseline uses PCA + logistic regression
+We intentionally start the demo with a very small classical baseline instead of a neural network.
+
+Why:
+1. it has almost no infrastructure cost;
+2. it runs fast on the server;
+3. it gives us a concrete notion of a communication bottleneck through the reduced feature dimension;
+4. it provides a clean task-agnostic baseline before we introduce a task-oriented learned representation.
+
+This is not meant to be the final semantic demo. It is the control experiment. Later, we can compare it against a learned task-oriented bottleneck under a similar dimension budget.
