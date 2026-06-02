@@ -97,3 +97,14 @@ This structure helps the report because it lets us explain the project in layers
 - then our extension.
 
 That is exactly the kind of progression that makes an information theory project readable and persuasive.
+
+## 6. Current curve-generation workflow
+The first concrete numerical artifact we want is a sampled version of the binary-case `R(D_s, \infty)` curve.
+
+The current workflow is:
+1. use `classification_rd_infinite` as the current rate function interface;
+2. sample the feasible interval from `Q(A/\sigma)` to `1/2` with `sample_rd_infinite_curve`;
+3. write the sampled points to CSV through `experiments/run_binary_curve.py`;
+4. later replace the staged interior formula with a closer numerical implementation while keeping the same experiment interface.
+
+This is an important implementation choice. It means the experiment pipeline can stabilize early, even while the interior mathematics is still being improved.

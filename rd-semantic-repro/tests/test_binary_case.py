@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from src.binary_case import classification_rd_infinite, gaussian_q
+from src.binary_case import classification_rd_infinite, gaussian_q, sample_rd_infinite_curve
 
 
 def test_gaussian_q_matches_known_value_at_one():
@@ -29,3 +29,15 @@ def test_rate_is_zero_when_semantic_distortion_is_half():
 def test_rejects_semantic_distortion_below_bayes_error():
     with pytest.raises(ValueError):
         classification_rd_infinite(A=1.0, sigma=1.0, Ds=0.1)
+
+
+def test_curve_sampler_includes_endpoints_and_returns_sorted_points():
+    points = sample_rd_infinite_curve(A=1.0, sigma=1.0, num_points=5)
+    ds_values = [point[0] for point in points]
+    rates = [point[1] for point in points]
+    assert len(points) == 5
+    assert math.isclose(ds_values[0], gaussian_q(1.0), rel_tol=1e-9, abs_tol=1e-9)
+    assert math.isclose(ds_values[-1], 0.5, rel_tol=1e-9, abs_tol=1e-9)
+    assert ds_values == sorted(ds_values)
+    assert math.isclose(rates[0], 1.0, rel_tol=1e-6)
+    assert math.isclose(rates[-1], 0.0, abs_tol=1e-6)

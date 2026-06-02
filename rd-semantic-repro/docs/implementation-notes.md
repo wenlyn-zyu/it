@@ -73,3 +73,15 @@ The multiclass extension is mathematically natural because it preserves the same
 - a task-driven distortion measure.
 
 It is also practical for a course report because it adds novelty without breaking the continuity with the original paper.
+
+
+## 9. First generated artifact
+We now generate a first CSV for the binary-case R(D_s, \infty) curve using experiments/run_binary_curve.py.
+
+This CSV is not yet the final reproduction claim of the paper. It is a staged numerical artifact built on the current interface and boundary-consistent implementation. Its purpose is to stabilize the data pipeline early:
+- tested rate function;
+- tested curve sampler;
+- reproducible experiment script;
+- saved curve data in igures/.
+
+This makes it much easier to refine the interior formula later without changing how figures are produced.

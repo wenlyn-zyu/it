@@ -20,3 +20,18 @@ def classification_rd_infinite(A: float, sigma: float, Ds: float) -> float:
     if Ds >= 0.5:
         return 0.0
     return 1.0 - binary_entropy(Ds)
+
+
+def sample_rd_infinite_curve(A: float, sigma: float, num_points: int):
+    if num_points < 2:
+        raise ValueError("num_points must be at least 2.")
+    left = gaussian_q(A / sigma)
+    right = 0.5
+    step = (right - left) / (num_points - 1)
+    points = []
+    for idx in range(num_points):
+        ds = left + idx * step
+        if idx == num_points - 1:
+            ds = right
+        points.append((ds, classification_rd_infinite(A=A, sigma=sigma, Ds=ds)))
+    return points
