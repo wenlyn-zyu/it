@@ -1,4 +1,6 @@
+import csv
 from math import erfc, isclose, log2, sqrt
+from pathlib import Path
 
 
 def gaussian_q(x: float) -> float:
@@ -35,3 +37,12 @@ def sample_rd_infinite_curve(A: float, sigma: float, num_points: int):
             ds = right
         points.append((ds, classification_rd_infinite(A=A, sigma=sigma, Ds=ds)))
     return points
+
+
+def save_rd_infinite_curve_csv(output_path: Path, A: float, sigma: float, num_points: int) -> None:
+    points = sample_rd_infinite_curve(A=A, sigma=sigma, num_points=num_points)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["Ds", "rate_bits"])
+        writer.writerows(points)

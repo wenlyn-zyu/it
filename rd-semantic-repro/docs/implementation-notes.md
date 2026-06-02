@@ -85,3 +85,13 @@ This CSV is not yet the final reproduction claim of the paper. It is a staged nu
 - saved curve data in igures/.
 
 This makes it much easier to refine the interior formula later without changing how figures are produced.
+
+## 10. First plotted artifact
+The next artifact after the sampled CSV is a direct plot of the binary-case `R(D_s, \infty)` curve.
+
+The plotting script uses the saved CSV rather than recomputing the curve inline. This is intentional:
+- data generation and plotting stay separated;
+- figure regeneration becomes simple;
+- later improvements to the interior formula can reuse the same output contract.
+
+This makes the workflow closer to a reproducible research pipeline rather than a one-off script.

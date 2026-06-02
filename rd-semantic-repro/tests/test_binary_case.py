@@ -1,8 +1,10 @@
+import csv
 import math
+from pathlib import Path
 
 import pytest
 
-from src.binary_case import classification_rd_infinite, gaussian_q, sample_rd_infinite_curve
+from src.binary_case import classification_rd_infinite, gaussian_q, sample_rd_infinite_curve, save_rd_infinite_curve_csv
 
 
 def test_gaussian_q_matches_known_value_at_one():
@@ -41,3 +43,11 @@ def test_curve_sampler_includes_endpoints_and_returns_sorted_points():
     assert ds_values == sorted(ds_values)
     assert math.isclose(rates[0], 1.0, rel_tol=1e-6)
     assert math.isclose(rates[-1], 0.0, abs_tol=1e-6)
+
+
+def test_save_curve_csv_writes_header_and_requested_number_of_rows(tmp_path: Path):
+    output_path = tmp_path / "curve.csv"
+    save_rd_infinite_curve_csv(output_path=output_path, A=1.0, sigma=1.0, num_points=5)
+    rows = list(csv.reader(output_path.open("r", encoding="utf-8")))
+    assert rows[0] == ["Ds", "rate_bits"]
+    assert len(rows) == 6
