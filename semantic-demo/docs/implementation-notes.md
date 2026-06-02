@@ -43,3 +43,13 @@ Why:
 4. it provides a clean task-agnostic baseline before we introduce a task-oriented learned representation.
 
 This is not meant to be the final semantic demo. It is the control experiment. Later, we can compare it against a learned task-oriented bottleneck under a similar dimension budget.
+
+## 5. First task-oriented comparator
+We now add a supervised projection comparator based on linear discriminant analysis.
+
+Why this is a meaningful next step:
+- PCA is task-agnostic and preserves generic variance;
+- supervised projection uses label information and is therefore task-oriented;
+- the comparison is lightweight enough to run quickly on the server while still illustrating the semantic idea.
+
+This is not yet a deep semantic communication model, but it already captures the contrast we care about: a representation optimized for the task can differ from one optimized only for generic signal structure.

@@ -104,3 +104,13 @@ In the binary classification case, the quantity `A/\sigma` controls how well sep
 So plotting multiple curves for different class separations is a natural next step. It lets us observe how the feasible semantic distortion region shifts as semantic ambiguity changes.
 
 This is already useful for the final report because it moves us from a single example curve to a comparative figure family.
+
+## 12. How to interpret the current binary curve family
+The current binary curve family should be read qualitatively as follows:
+- larger A/\sigma means the two classes are easier to distinguish;
+- therefore the left endpoint Q(A/\sigma) shifts left;
+- this enlarges the feasible semantic-distortion interval.
+
+In report language, this means stronger semantic separability reduces the minimum distortion floor for classification-oriented communication.
+
+At the current stage, this is the clearest visual story produced by the A-track implementation.

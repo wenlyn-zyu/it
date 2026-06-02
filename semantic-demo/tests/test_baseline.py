@@ -1,4 +1,4 @@
-from src.baseline import run_pca_logistic_baseline
+from src.baseline import run_pca_logistic_baseline, run_supervised_projection_baseline
 
 
 def test_pca_logistic_baseline_returns_reasonable_accuracy():
@@ -6,3 +6,11 @@ def test_pca_logistic_baseline_returns_reasonable_accuracy():
     assert result["input_dim"] == 64
     assert result["n_components"] == 16
     assert 0.8 <= result["accuracy"] <= 1.0
+
+
+def test_supervised_projection_baseline_returns_valid_result():
+    result = run_supervised_projection_baseline(n_components=16, random_state=0)
+    assert result["input_dim"] == 64
+    assert result["n_components"] == 9
+    assert 0.8 <= result["accuracy"] <= 1.0
+    assert result["method"] == "supervised_projection"
