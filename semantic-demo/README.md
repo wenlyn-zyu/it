@@ -47,3 +47,14 @@ The current result already shows the desired qualitative trend:
 - as the bottleneck grows, the gap narrows, but the task-oriented method remains competitive or slightly better.
 
 This is a useful supporting result for the project because it translates the semantic-information intuition into a compact empirical story: under constrained representation budgets, task-aware compression can be more effective than generic compression.
+
+
+## 6. Current figure artifact
+The current main C-track figure is 
+esults/baseline_comparison.png, which plots classification accuracy against requested bottleneck dimension.
+
+Its present qualitative message is straightforward:
+- in the low-budget regime, the task-oriented supervised projection outperforms the task-agnostic PCA baseline;
+- as the bottleneck grows, both methods improve, and the gap narrows.
+
+This is exactly the kind of compact visual evidence we want from the engineering side of the project.

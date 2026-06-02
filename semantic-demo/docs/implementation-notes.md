@@ -61,3 +61,11 @@ To make the demo more report-friendly, we now compare methods across multiple re
 > how does task-aware compression behave as the communication budget changes?
 
 That is much closer to the language of rate-distortion tradeoffs, even though this demo still uses practical feature dimensions rather than a formal information rate.
+## 7. Why the first C figure is accuracy versus bottleneck dimension
+Once the comparison table exists, the most natural visualization is a curve of accuracy against requested bottleneck size.
+
+This figure is useful because it compresses the main empirical story into one picture:
+- how quickly each method improves as more representation budget is allowed;
+- whether the task-oriented method has an advantage in the small-budget regime.
+
+That small-budget regime is the most important part for the project narrative, because it is where semantic selectivity should matter the most.

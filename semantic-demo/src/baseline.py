@@ -1,3 +1,6 @@
+import csv
+from pathlib import Path
+
 from sklearn.datasets import load_digits
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.decomposition import PCA
@@ -56,3 +59,15 @@ def compare_methods_across_dimensions(dimensions, random_state: int = 0):
         task_oriented["requested_n_components"] = dim
         rows.append(task_oriented)
     return rows
+
+
+def save_comparison_csv(output_path: Path, dimensions, random_state: int = 0):
+    rows = compare_methods_across_dimensions(dimensions=dimensions, random_state=random_state)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=["method", "requested_n_components", "n_components", "accuracy", "input_dim"],
+        )
+        writer.writeheader()
+        writer.writerows(rows)
