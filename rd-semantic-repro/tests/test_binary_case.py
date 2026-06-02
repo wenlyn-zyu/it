@@ -15,6 +15,12 @@ def test_rate_is_one_bit_at_bayes_error_boundary_when_a_equals_sigma():
     assert math.isclose(rate, 1.0, rel_tol=1e-6)
 
 
+def test_rate_decreases_as_allowed_semantic_distortion_increases():
+    lower = classification_rd_infinite(A=1.0, sigma=1.0, Ds=0.2)
+    upper = classification_rd_infinite(A=1.0, sigma=1.0, Ds=0.3)
+    assert lower >= upper
+
+
 def test_rate_is_zero_when_semantic_distortion_is_half():
     rate = classification_rd_infinite(A=1.0, sigma=1.0, Ds=0.5)
     assert math.isclose(rate, 0.0, abs_tol=1e-6)

@@ -2,27 +2,38 @@
 
 Companion engineering demo for the EE142 project.
 
-## Goal
-This is the secondary project track. It does **not** try to reproduce the theorems of the original paper directly. Instead, it builds a small, runnable demonstration of the paper's central intuition:
+## 1. Why this project exists
+This is the secondary track. The main track reproduces the mathematics of the paper. This demo track exists to make the same core idea visible in an engineering experiment:
 
-> when the receiver only cares about a task, the best transmitted representation need not preserve the full appearance of the raw observation.
+> if the destination mainly cares about a task, then a task-oriented representation can outperform a generic appearance-preserving representation under the same bottleneck budget.
 
-## Why this track exists
-The main theory track explains the rate-distortion viewpoint mathematically. This demo track provides an engineering-level illustration that is easier to show in a poster presentation or short oral presentation.
+This is not a theorem-proof track. It is an intuition-building and presentation-support track.
 
-The planned comparison is:
-1. **task-agnostic baseline**: compress or reduce the observation in a generic way, then classify;
-2. **task-oriented representation**: learn a compact representation specifically optimized for the classification task.
+## 2. How it relates to the original paper
+The original paper studies a source (S, X) where:
+- S is the semantic state;
+- X is the observation.
 
-If the task-oriented method achieves higher accuracy under the same communication budget, that visually supports the message of the original paper.
+In the demo:
+- the class label is the practical analogue of S;
+- the image or feature vector is the practical analogue of X;
+- a feature bottleneck is used as a rough communication-budget proxy.
 
-## Scope control
-This track is intentionally small. It is supporting evidence, not the main theoretical contribution.
+So this demo does not compute the exact SORDF. Instead, it illustrates the same semantic principle in a lightweight machine learning setting.
 
-To keep it feasible, we start with a simple dataset such as MNIST or another lightweight classification dataset.
+## 3. Why we start with PCA + logistic regression
+We deliberately start with a very small baseline:
+- PCA acts as generic, task-agnostic compression;
+- logistic regression acts as a simple downstream classifier.
 
-## Project structure
-- `src/`: dataset handling and models
-- `experiments/`: train/evaluate scripts
-- `results/`: metrics and figures
-- `docs/`: implementation rationale
+This choice is good for the project because it is:
+1. easy to run on the server;
+2. easy to explain in the report;
+3. a clear control group for later task-oriented models.
+
+## 4. Planned comparison
+The intended comparison is:
+- **baseline**: generic compressed representation then classification;
+- **task-oriented**: representation learned directly for the label prediction task under a similar bottleneck budget.
+
+If the task-oriented method performs better at the same reduced dimension, that supports the semantic-communication intuition behind the paper.

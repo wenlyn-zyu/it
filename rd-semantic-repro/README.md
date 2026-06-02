@@ -2,41 +2,98 @@
 
 Main theory-first project for reproducing the paper **A Rate-Distortion Framework for Characterizing Semantic Information**.
 
-## Goal
-This project is the main EE142 course-project track. It aims to:
-1. numerically reproduce the key results in the paper;
-2. generate publication-ready figures for the report and poster;
-3. build one small extension beyond the original paper.
+## 1. Why this project is implemented this way
+This project is the main EE142 course-project track. The course asks for a professional report, clear technical explanation, and preferably a new idea. For that reason, we do **not** start from a large engineering system. We start from the mathematics of the paper itself.
 
-## Why this project exists
-The original paper is elegant but compact. It gives the information-theoretic formulation and several closed-form or semi-closed-form case studies, but it does not provide public code in this repository. For a course project, reproduction is valuable because it turns the abstract rate-distortion statements into visible numerical behavior.
+The original paper is an information-theoretic paper. Its main contribution is not a software system, but a formal rate-distortion framework for a source modeled as (S, X):
+- S: intrinsic state, representing the semantic content;
+- X: extrinsic observation, representing the observable appearance.
 
-We prioritize this track because the EE142 guideline asks for a professional English report, clear technical proof, and encourages new ideas. A clean numerical reproduction satisfies the proof-oriented part, while a controlled extension can provide the new idea.
+The paper asks: what is the minimum rate needed to reproduce both semantic content and appearance under two separate distortion constraints?
 
-## Planned phases
-### Phase 1: Binary classification case
-Reproduce:
-- the soft semantic decision function `g(x)`;
-- the curve `R(D_s, \infty)`;
-- the achievable upper bound on `R(D_s, D_a)`.
+That question is encoded by the **state-observation rate-distortion function** (SORDF). Since the central object is mathematical, our implementation also has to be mathematical first. Otherwise, the project would drift away from the original paper.
 
-This is the best entry point because the numerical problem is lower-dimensional and directly shows the semantic-vs-appearance tradeoff.
+So the implementation strategy is:
+1. reproduce the paper's basic numerical claims;
+2. turn theorems and boundary conditions into executable tests;
+3. only after that, extend the model with one modest new idea.
 
-### Phase 2: Gaussian cases
-Reproduce:
-- scalar Gaussian closed-form `R(D_s, D_a)`;
-- contour or region plots that visualize the two-distortion tradeoff;
-- selected vector-Gaussian behavior if computation remains stable.
+## 2. How this project is implemented
+The repository is split into:
+- src/: reusable numerical routines;
+- 	ests/: theorem-inspired checks and boundary conditions;
+- experiments/: scripts that will generate report figures;
+- docs/: explanatory notes for the report and poster.
 
-### Phase 3: Extension
-Preferred extension: multiclass semantic state model.
-Instead of `S in {0,1}`, consider `S in {1,2,...,K}` with class-conditional Gaussian observations. This keeps the intrinsic-state / extrinsic-observation philosophy of the original paper while adding a small but meaningful generalization.
+We intentionally use **test-driven development** for the numerical routines. In a mathematics-heavy project, tests are not just software checks; they are a way to encode the domain of validity of the formulas.
 
-## Project structure
-- `src/`: reusable numerical routines
-- `experiments/`: runnable scripts for each figure or table
-- `figures/`: generated plots
-- `docs/`: detailed implementation notes
+For example, in the binary classification case, we first implemented and tested:
+- the Gaussian Q-function;
+- the infeasible region D_s < Q(A/\sigma);
+- the zero-rate boundary at D_s = 1/2;
+- the one-bit boundary at D_s = Q(A/\sigma).
 
-## First implementation target
-Start from the binary classification case, because it provides the fastest path to a credible reproduction figure.
+These are meaningful mathematical facts from the paper, not arbitrary implementation details.
+
+## 3. Detailed mathematical relation to the paper
+### 3.1 Source model
+The paper models the source as a random pair (S, X).
+- S is hidden and semantic;
+- X is visible and observable.
+
+The encoder sees only X, not S. The decoder produces both \hat S and \hat X.
+
+This matters because semantic reconstruction is **indirect**: the decoder must infer S through information carried by X.
+
+### 3.2 Two distortion constraints
+The paper uses two distortions:
+- d_s(s, \hat s): semantic distortion;
+- d_a(x, \hat x): appearance distortion.
+
+Hence the objective is not ordinary compression. It is not enough to reproduce the appearance well, and it is also not enough to do the semantic task well if the appearance must also be preserved. The interesting part is the tradeoff between the two.
+
+### 3.3 State-observation rate-distortion function
+The paper shows that the SORDF is
+R(D_s, D_a) = min I(X; \hat S, \hat X)
+subject to the semantic and appearance constraints.
+
+This formula is the center of the project. It says the rate is controlled by how much information about X must be kept to support both reconstructed outputs.
+
+### 3.4 Why the binary classification case is the first target
+The binary case in the paper is:
+- S is Bernoulli with equal prior;
+- X | S=0 ~ N(A, \sigma^2);
+- X | S=1 ~ N(-A, \sigma^2).
+
+Semantic distortion is Hamming loss. Appearance distortion is squared error.
+
+This is the best first reproduction target because:
+1. it captures the meaning of semantic distortion very clearly;
+2. the Bayes classification error has a clean boundary Q(A/\sigma);
+3. the paper gives explicit formulas and an achievable upper bound;
+4. the same setup can later be generalized to multiclass semantics.
+
+### 3.5 Meaning of the current implementation
+At the current stage, the code already encodes several theorem-level facts:
+- if D_s < Q(A/\sigma), the target is infeasible;
+- if D_s = Q(A/\sigma), the rate sits at the most demanding classification boundary in our current staged implementation;
+- if D_s >= 1/2, zero rate is enough;
+- between these endpoints, the rate should decrease as larger semantic distortion is allowed.
+
+The present interior formula is still a staged implementation step. It gives us the right monotonic and boundary behavior while we continue building the fuller numerical procedure.
+
+## 4. Planned next steps
+1. replace the current staged interior formula with a closer numerical implementation of the paper's binary-case expression;
+2. generate the first R(D_s, \infty) curve;
+3. reproduce the achievable upper bound for R(D_s, D_a);
+4. move to the Gaussian cases;
+5. add a multiclass extension.
+
+## 5. Why this helps the final report
+This structure helps the report because it lets us explain the project in layers:
+- first the model;
+- then the theorem;
+- then the numerical reproduction;
+- then our extension.
+
+That is exactly the kind of progression that makes an information theory project readable and persuasive.

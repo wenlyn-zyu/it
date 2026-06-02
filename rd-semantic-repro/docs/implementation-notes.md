@@ -1,75 +1,75 @@
-# Implementation Notes for `rd-semantic-repro`
+# Implementation Notes for 
+d-semantic-repro
 
-## 1. Relation to the original paper
-The paper models a source as a pair `(S, X)`:
-- `S`: the intrinsic state, interpreted as the semantic content;
-- `X`: the extrinsic observation, interpreted as the observable appearance.
+## 1. Core philosophy
+This project is implemented as a mathematics-first reproduction because the original paper is itself mathematics-first. The goal is not to loosely imitate its intuition, but to preserve a direct line from theorem to code to figure.
 
-The main object is the **state-observation rate-distortion function** (SORDF), which asks for the minimum rate required to jointly control:
-- semantic distortion between `S` and `\hat S`;
-- appearance distortion between `X` and `\hat X`.
+## 2. Mathematical problem from the paper
+The paper models a source as (S, X) with joint law p(s, x).
+- S is the intrinsic state, i.e. the semantic aspect.
+- X is the extrinsic observation, i.e. the visible appearance.
 
-Our implementation mirrors the paper section by section instead of jumping directly to a neural-network system. That choice is deliberate: this project is for an information theory course, and the numerical code should remain visibly tied to the mathematics.
+The encoder sees X^n, compresses it, and the decoder outputs both \hat S^n and \hat X^n.
 
-## 2. Why we implement the binary case first
-The binary classification case in the paper is the most educational numerical entry point.
+Two distortions are imposed:
+- semantic distortion d_s;
+- appearance distortion d_a.
 
-Why:
-1. It already captures the key idea of semantic communication: good task performance does not require perfect reconstruction of the observation.
-2. The quantities are numerically manageable.
-3. The figures are easy to interpret in a report.
-4. The same code path can later support the multiclass extension.
+The rate-distortion tradeoff is therefore two-dimensional.
 
-In plain language: before handling large matrices or high-dimensional Gaussian decompositions, we want a simple example where the meaning of semantic distortion is unmistakable.
+## 3. Why SORDF matters
+The paper derives a state-observation rate-distortion function of the form
+R(D_s, D_a) = min I(X; \hat S, \hat X)
+subject to the two distortion constraints.
 
-## 3. Why the code is split into `src/` and `experiments/`
-We separate reusable mathematics from script-level experiments.
+This matters conceptually because it formalizes a central theme of semantic communication: the destination may care about both meaning and appearance, but not necessarily equally.
 
-- `src/` contains reusable routines such as density evaluation, entropy terms, numerical integration, and plotting helpers.
-- `experiments/` contains scripts that produce one figure family at a time.
+## 4. Why the binary case comes first
+The binary classification case is numerically smaller and conceptually sharper than the Gaussian vector case.
 
-This split is important for the report. It makes it easy to say:
-- here is the mathematical routine we implemented;
-- here is the exact experiment that generated the figure.
+Model:
+- S uniform on {0,1};
+- X|S=0 ~ N(A, \sigma^2);
+- X|S=1 ~ N(-A, \sigma^2).
 
-That transparency helps when writing the technical section of the EE142 report.
+The paper shows that the feasible distortion region for R(D_s, \infty) is bounded below by the Bayes error Q(A/\sigma) and above by 1/2.
 
-## 4. Why multiclass is the preferred extension
-The original paper handles binary classification in detail. A natural next question is: what changes when semantic meaning is not binary?
+That gives us immediate executable checks:
+- values below Q(A/\sigma) should be rejected;
+- value 1/2 should give zero rate.
 
-The multiclass extension is attractive because:
-- it preserves the intrinsic/extrinsic modeling philosophy;
-- it remains close to classification tasks used in machine learning;
-- it can produce new plots without changing the project into a completely different topic.
+## 5. Why TDD is especially useful here
+In this project, tests act as mathematical assertions.
 
-In other words, it is ambitious enough to count as a new idea, but conservative enough to stay faithful to the original paper.
+Examples:
+- gaussian_q(1) has a known numeric value;
+- infeasible distortion requests must be rejected;
+- allowing more semantic distortion should not increase the required rate.
 
-## 5. Expected outputs for the report
-This project should eventually provide:
-- replicated curves from the binary classification case;
-- replicated or matched trends for the Gaussian case;
-- at least one new multiclass result;
-- concise explanations that connect numerical behavior back to the SORDF formulation.
+These tests are useful even before the full numerical machinery is built because they lock down the theorem's domain and qualitative behavior.
 
-## 6. How this supports the course requirements
-The EE142 guideline asks for:
-- a professional English report;
-- clear technical description;
-- an original idea if possible.
+## 6. Current staged implementation
+The current code is intentionally staged.
 
-This implementation supports those requirements as follows:
-- reproduction gives technical credibility;
-- section-by-section numerical reconstruction forces us to explain the proof ideas clearly;
-- the multiclass extension gives us a modest but real innovation.
+Stage 1:
+- implement exact boundary behavior;
+- verify monotonic direction;
+- keep the interface stable.
 
+Stage 2:
+- replace the staged interior formula by a fuller numerical routine closer to the paper's expression for R(D_s, \infty).
 
-## 7. Why the first implemented behaviors are boundary cases
-We started the code with two boundary behaviors and tested them first.
+This staged approach prevents us from jumping straight into opaque numerical integration without first validating the logical skeleton of the model.
 
-### Boundary 1: D_s >= 1/2 implies zero rate
-In the binary model with equal priors, 1/2 corresponds to a trivial guesser. If the allowed semantic distortion is already this large, the encoder does not need to communicate anything to satisfy the semantic requirement. This is the cleanest sanity check for R(D_s, \infty).
+## 7. How the current code maps to the paper
+- gaussian_q corresponds to the Bayes classification boundary used in the binary model.
+- classification_rd_infinite is our evolving numerical entry point for the paper's R(D_s, \infty) quantity.
+- the tests encode boundary facts and monotonicity suggested by the theory.
 
-### Boundary 2: D_s < Q(A/\sigma) is infeasible
-The paper states that the binary case only makes sense for Q(A/\sigma) <= D_s <= 1/2. The lower endpoint is the Bayes classification error. So if the user asks for a smaller distortion than the best classifier can achieve from the observation, the numerical routine should reject the input rather than silently produce nonsense.
+## 8. Why the extension should be multiclass
+The multiclass extension is mathematically natural because it preserves the same semantic idea:
+- a hidden semantic state;
+- an observable signal drawn from a class-conditional distribution;
+- a task-driven distortion measure.
 
-These two tests are not just software conveniences. They encode the mathematical domain of the theorem into executable checks.
+It is also practical for a course report because it adds novelty without breaking the continuity with the original paper.
