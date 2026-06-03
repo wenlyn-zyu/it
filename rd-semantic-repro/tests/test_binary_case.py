@@ -7,6 +7,7 @@ import pytest
 from src.binary_case import (
     classification_rd_infinite,
     gaussian_q,
+    posterior_probability_s0,
     sample_rd_infinite_curve,
     save_rd_infinite_curve_csv,
 )
@@ -14,6 +15,14 @@ from src.binary_case import (
 
 def test_gaussian_q_matches_known_value_at_one():
     assert math.isclose(gaussian_q(1.0), 0.15865525393145707, rel_tol=1e-9)
+
+
+def test_posterior_is_half_at_zero_for_symmetric_binary_model():
+    assert math.isclose(posterior_probability_s0(x=0.0, A=1.0, sigma=1.0), 0.5, abs_tol=1e-9)
+
+
+def test_posterior_is_large_for_large_positive_observation():
+    assert posterior_probability_s0(x=5.0, A=1.0, sigma=1.0) > 0.99
 
 
 def test_rate_is_one_bit_at_bayes_error_boundary_when_a_equals_sigma():
