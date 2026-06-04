@@ -2,4 +2,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 figures/
+!rd-semantic-repro/figures/
+!rd-semantic-repro/figures/**
 results/
