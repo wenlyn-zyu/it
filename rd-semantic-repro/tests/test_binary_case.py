@@ -94,3 +94,30 @@ def test_soft_decision_curve_increases_with_observation():
     g_values = [point[1] for point in points]
     assert g_values == sorted(g_values)
     assert g_values[0] < 0.5 < g_values[-1]
+
+
+def test_rd_upper_bound_rejects_nonpositive_appearance_distortion():
+    from src.binary_case import rd_upper_bound
+
+    with pytest.raises(ValueError):
+        rd_upper_bound(A=1.0, sigma=1.0, Ds=0.3, Da=0.0)
+
+
+def test_finite_da_upper_bound_is_nonincreasing_as_da_relaxes():
+    from src.binary_case import rd_upper_bound
+
+    tight = rd_upper_bound(A=1.0, sigma=1.0, Ds=0.3, Da=0.1)
+    loose = rd_upper_bound(A=1.0, sigma=1.0, Ds=0.3, Da=1.0)
+    assert tight >= loose
+
+
+def test_sample_rd_finite_curve_includes_feasible_semantic_interval():
+    from src.binary_case import gaussian_q, sample_rd_finite_curve
+
+    points = sample_rd_finite_curve(A=1.0, sigma=1.0, Da=0.5, num_Ds_points=5)
+    ds_values = [point[0] for point in points]
+    rates = [point[1] for point in points]
+    assert math.isclose(ds_values[0], gaussian_q(1.0), rel_tol=1e-9, abs_tol=1e-9)
+    assert math.isclose(ds_values[-1], 0.5, rel_tol=1e-9, abs_tol=1e-9)
+    assert ds_values == sorted(ds_values)
+    assert all(rate >= 0.0 for rate in rates)
