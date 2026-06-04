@@ -71,3 +71,26 @@ def test_better_class_separation_reduces_left_endpoint_distortion():
     points_low = sample_rd_infinite_curve(A=0.5, sigma=1.0, num_points=5)
     points_high = sample_rd_infinite_curve(A=2.0, sigma=1.0, num_points=5)
     assert points_high[0][0] < points_low[0][0]
+
+def test_soft_decision_curve_is_symmetric_around_origin():
+    from src.binary_case import sample_soft_decision_curve
+
+    points = sample_soft_decision_curve(A=1.0, sigma=1.0, Ds=0.3, x_min=-2.0, x_max=2.0, num_points=5)
+    assert len(points) == 5
+    left_x, left_g = points[0]
+    mid_x, mid_g = points[2]
+    right_x, right_g = points[-1]
+    assert math.isclose(left_x, -2.0, abs_tol=1e-12)
+    assert math.isclose(mid_x, 0.0, abs_tol=1e-12)
+    assert math.isclose(right_x, 2.0, abs_tol=1e-12)
+    assert math.isclose(mid_g, 0.5, abs_tol=1e-9)
+    assert math.isclose(left_g + right_g, 1.0, abs_tol=1e-6)
+
+
+def test_soft_decision_curve_increases_with_observation():
+    from src.binary_case import sample_soft_decision_curve
+
+    points = sample_soft_decision_curve(A=1.0, sigma=1.0, Ds=0.3, x_min=-3.0, x_max=3.0, num_points=31)
+    g_values = [point[1] for point in points]
+    assert g_values == sorted(g_values)
+    assert g_values[0] < 0.5 < g_values[-1]

@@ -196,6 +196,33 @@ def sample_rd_finite_curve(A: float, sigma: float, Da: float, num_Ds_points: int
     return points
 
 
+def sample_soft_decision_curve(
+    A: float,
+    sigma: float,
+    Ds: float,
+    x_min: float = -3.0,
+    x_max: float = 3.0,
+    num_points: int = 121,
+):
+    bayes_error = gaussian_q(A / sigma)
+    if Ds < bayes_error - 1e-12:
+        raise ValueError("Ds={} is below Bayes error.".format(Ds))
+    if num_points < 2:
+        raise ValueError("num_points must be at least 2.")
+    if Ds >= 0.5 - 1e-12:
+        lam = -1e-6
+    else:
+        lam = _find_lambda(A, sigma, Ds)
+    step = (x_max - x_min) / (num_points - 1)
+    points = []
+    for idx in range(num_points):
+        x = x_min + idx * step
+        if idx == num_points - 1:
+            x = x_max
+        points.append((x, _compute_g(x, lam, A, sigma)))
+    return points
+
+
 def sample_rd_infinite_curve(A: float, sigma: float, num_points: int):
     if num_points < 2:
         raise ValueError("num_points must be at least 2.")
