@@ -5,3 +5,9 @@ figures/
 !rd-semantic-repro/figures/
 !rd-semantic-repro/figures/**
 results/
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.toc
