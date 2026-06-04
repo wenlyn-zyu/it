@@ -113,6 +113,89 @@ def classification_rd_infinite(A: float, sigma: float, Ds: float) -> float:
     lam = _find_lambda(A, sigma, Ds)
     return _compute_rate_integral(lam, A, sigma)
 
+
+def compute_conditional_moments(A: float, sigma: float, lam: float) -> tuple:
+    n_pts = 2000
+    x_min = -10.0 * sigma
+    x_max = 10.0 * sigma
+    dx = (x_max - x_min) / n_pts
+    norm = 0.0
+    mean = 0.0
+    var = 0.0
+    for i in range(n_pts):
+        x = x_min + (i + 0.5) * dx
+        n_plus = gaussian_pdf(x, mean=A, sigma=sigma)
+        n_minus = gaussian_pdf(x, mean=-A, sigma=sigma)
+        g = _compute_g(x, lam, A, sigma)
+        w = (n_plus + n_minus) * g
+        norm += w * dx
+        mean += x * w * dx
+    if norm > 0.0:
+        mean /= norm
+    else:
+        return 1.0, 0.0
+    for i in range(n_pts):
+        x = x_min + (i + 0.5) * dx
+        n_plus = gaussian_pdf(x, mean=A, sigma=sigma)
+        n_minus = gaussian_pdf(x, mean=-A, sigma=sigma)
+        g = _compute_g(x, lam, A, sigma)
+        w = (n_plus + n_minus) * g
+        var += (x - mean) ** 2 * w * dx
+    if norm > 0.0:
+        var /= norm
+    return mean, var
+
+
+def rd_upper_bound(A: float, sigma: float, Ds: float, Da: float, num_D_samples: int = 50) -> float:
+    bayes_error = gaussian_q(A / sigma)
+    if Ds < bayes_error - 1e-12:
+        raise ValueError("Ds={} is below Bayes error.".format(Ds))
+    if Da <= 0.0:
+        raise ValueError("Da must be positive.")
+    best_rate = float('inf')
+    D_min = max(bayes_error, 1e-10)
+    D_max = Ds
+    if D_max <= D_min:
+        D_vals = [D_min]
+    else:
+        D_vals = [D_min + i * (D_max - D_min) / (num_D_samples - 1) for i in range(num_D_samples)]
+    for D in D_vals:
+        if D >= 0.5:
+            rate_semantic = 0.0
+            eta_val = (A*A + sigma*sigma)
+        else:
+            rate_semantic = classification_rd_infinite(A, sigma, D)
+            if isclose(D, bayes_error, rel_tol=1e-9, abs_tol=1e-9):
+                lam = _find_lambda(A, sigma, D + 0.001)
+            else:
+                lam = _find_lambda(A, sigma, D)
+            _, eta_val = compute_conditional_moments(A, sigma, lam)
+        if eta_val <= 0.0:
+            eta_val = 0.001
+        rate_appearance = 0.5 * max(0.0, log2(eta_val / Da))
+        total_rate = rate_semantic + rate_appearance
+        if total_rate < best_rate:
+            best_rate = total_rate
+    return best_rate
+
+
+def sample_rd_finite_curve(A: float, sigma: float, Da: float, num_Ds_points: int = 30):
+    bayes_error = gaussian_q(A / sigma)
+    left = bayes_error
+    right = 0.5
+    if num_Ds_points < 2:
+        num_Ds_points = 2
+    step = (right - left) / (num_Ds_points - 1)
+    points = []
+    for idx in range(num_Ds_points):
+        ds = left + idx * step
+        if idx == num_Ds_points - 1:
+            ds = right
+        rate = rd_upper_bound(A, sigma, ds, Da)
+        points.append((ds, rate))
+    return points
+
+
 def sample_rd_infinite_curve(A: float, sigma: float, num_points: int):
     if num_points < 2:
         raise ValueError("num_points must be at least 2.")
