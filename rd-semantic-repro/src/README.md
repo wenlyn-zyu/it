@@ -1,6 +1,8 @@
 # Source modules
 
-`binary_case.py` contains the implemented numerical routines for the binary classification reproduction in Section V of the paper.
+## `binary_case.py`
+
+Numerical routines for the binary classification reproduction in Section V of the paper.
 
 Implemented functions:
 
@@ -12,7 +14,18 @@ Implemented functions:
 - `rd_upper_bound`: Proposition 6 achievable upper bound for finite appearance distortion.
 - `sample_rd_finite_curve`: helper for finite-`D_a` semantic-distortion sweeps.
 
-Planned but not yet implemented modules:
+## `gaussian_case.py`
 
-- Gaussian scalar/vector case routines for Section IV.
-- A small extension module, such as multiclass semantic states.
+Closed-form routines for the Gaussian case studies in Section IV.
+
+Implemented functions:
+
+- `gaussian_scalar_sordf`: Proposition 3 scalar Gaussian SORDF.
+- `sample_scalar_gaussian_surface`: grid sampler for scalar Gaussian contour plots.
+- `gaussian_vector_parameters`: MMSE and alpha parameters for Proposition 4.
+- `gaussian_vector_sordf`: Proposition 4 five-region vector Gaussian SORDF.
+- `sample_vector_gaussian_surface`: grid sampler for vector Gaussian contour plots.
+
+Planned extension module:
+
+- A small extension such as multiclass semantic states or finite-sample SORDF estimation.
