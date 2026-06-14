@@ -29,7 +29,10 @@ if __name__ == "__main__":
             rate_values.append(float(row["rate_bits"]))
 
     plt.figure(figsize=(6, 4))
-    plt.plot(ds_values, rate_values, linewidth=2)
+    plt.plot(ds_values, rate_values, linewidth=2,label='Soft (optimal)')
+
+    plt.plot(ds_naive, rate_naive, 'orange', linewidth=2, label='Hard (naive)')
+    plt.legend()
     plt.xlabel("Semantic distortion $D_s$")
     plt.ylabel(r"$R(D_s, \infty)$ [bits]")
     plt.title("Binary classification case (A=1, sigma=1)")
@@ -40,3 +43,5 @@ if __name__ == "__main__":
 
     print(f"Wrote curve data to {csv_path}")
     print(f"Wrote plot to {png_path}")
+
+    

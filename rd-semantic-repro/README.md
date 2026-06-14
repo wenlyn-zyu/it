@@ -29,9 +29,9 @@ We intentionally use **test-driven development** for the numerical routines. In 
 
 For example, in the binary classification case, we first implemented and tested:
 - the Gaussian Q-function;
-- the infeasible region D_s < Q(A/\sigma);
-- the zero-rate boundary at D_s = 1/2;
-- the one-bit boundary at D_s = Q(A/\sigma).
+- the infeasible region $D_s < Q(A/\sigma)$;
+- the zero-rate boundary at $D_s = 1/2$;
+- the one-bit boundary at $D_s = Q(A/\sigma)$.
 
 These are meaningful mathematical facts from the paper, not arbitrary implementation details.
 
