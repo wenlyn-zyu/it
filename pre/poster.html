@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Poster - Semantic Rate-Distortion</title>
+    
+    <!-- 引入 MathJax 库，自动将 $ 符号解析并渲染为美观的数学公式 -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <style>
+        :root {
+            --primary: #30425e; /* 深 slate 蓝 */
+            --accent: #837ee6;  /* 靛青色 */
+            --bg-light: #f8fafc;
+            --border-color: #cbd5e1;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #e2e8f0;
+            color: var(--text-dark);
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 16:9 标准学术海报比例 (1440px 宽度) */
+        .poster {
+            width: 1440px;
+            background-color: #ffffff;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 12px;
+            padding: 40px;
+            border-top: 18px solid var(--accent);
+        }
+
+        /* Header block */
+        header {
+            text-align: center;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 44px; /* 【已放大】从 32px 放大至 44px */
+            font-weight: 800;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        header h2 {
+            color: var(--accent);
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .meta-info {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .meta-info span {
+            margin: 0 15px;
+        }
+
+        /* 3 Column Grid (确保三列精确等宽且不溢出) */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+        }
+
+        .column {
+            min-width: 0; /* 防止子元素把列宽撑开 */
+        }
+
+        /* Card container */
+        .card {
+            background-color: var(--bg-light);
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card h3 {
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: 700;
+            border-bottom: 3px solid var(--accent);
+            padding-bottom: 6px;
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card p {
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .card ul {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-muted);
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .card li {
+            margin-bottom: 6px;
+        }
+
+        /* 数学公式容器 */
+        .math-container {
+            background-color: #eef2ff;
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        /* HTML/CSS 绘制信号流图 */
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2px; /* 【已优化】紧凑元素间距 */
+            margin: 20px 0;
+            padding: 12px 6px; /* 【已优化】缩小左右边界，留出更多空间 */
+            background: #fff;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+            width: 100%;
+        }
+
+        .node {
+            padding: 5px 8px; /* 【已优化】缩小内边距防止宽度溢出 */
+            border-radius: 6px;
+            font-size: 10.5px; /* 【已优化】微调节点字号 */
+            font-weight: bold;
+            text-align: center;
+            line-height: 1.2;
+            flex-shrink: 0; /* 避免在容器中被无故挤压变形 */
+        }
+
+        .node-s { background-color: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .node-x { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .node-enc { background-color: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }
+        .node-dec { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+
+        .arrow {
+            color: #94a3b8;
+            font-weight: bold;
+            font-size: 10px; /* 【已优化】微调箭头大小 */
+            flex-shrink: 0;
+        }
+
+        /* 图片占位符 */
+        .img-placeholder {
+            border: 2px dashed #818cf8;
+            background: linear-gradient(135deg, #e0e7ff 0%, #eef2ff 100%);
+            border-radius: 8px;
+            min-height: 160px;
+            margin: 15px 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .img-placeholder .fig-title {
+            color: #4f46e5;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .img-placeholder .fig-desc {
+            color: #6366f1;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        footer {
+            margin-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            font-size: 11px;
+            color: #94a3b8;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="poster">
+    <!-- Header -->
+    <header>
+        <h1>A Rate-Distortion Framework for Characterizing Semantic Information</h1>
+        
+        <div class="meta-info">
+            <span><strong>Presenter:</strong> [Your Name]</span> | 
+            <span><strong>Baseline:</strong> Liu et al., IEEE 2021</span> | 
+            <span><strong>Environment:</strong> PyTorch / MNIST</span>
+        </div>
+    </header>
+
+    <!-- Main columns -->
+    <div class="grid-layout">
+        
+        <!-- Column 1: Background, Formulation & Proof -->
+        <div class="column">
+            <!-- Box 1: Shortened Motivation -->
+            <div class="card">
+                <h3>1. Background & Motivation</h3>
+                <p><strong>The Gap:</strong> Shannon's theory excludes semantics, focusing purely on reconstructing bits. Traditional compression often leads to blurry images under low bitrates.</p>
+                <p><strong>The Concept:</strong> Semantic aspects correspond to achieving inference goals. By splitting a source into an <em>unobservable intrinsic state $S$</em> and an <em>observable appearance $X$</em>, we can jointly optimize reconstruction and inference.</p>
+            </div>
+
+            <!-- Box 2: Problem Modeling -->
+            <div class="card">
+                <h3>2. Problem Modeling</h3>
+                <p>We model the memoryless source as $(S, X) \sim p(s,x)$. The encoder only observes $X$, while the decoder reconstructs both $S$ and $X$.</p>
+                
+                <!-- HTML Process Flow Diagram (已针对宽度溢出精细调优内联样式) -->
+                <div class="flow-diagram">
+                    <div class="node node-s">S<br>(Intrinsic)</div>
+                    <div class="arrow">→</div>
+                    <div class="node node-x">X<br>(Extrinsic)</div>
+                    <div class="arrow">→</div>
+                    <div class="node node-enc">Encoder<br>R bits</div>
+                    <div class="arrow">→</div>
+                    <div class="node node-dec">Decoder</div>
+                    <div class="arrow">→</div>
+                    <!-- 将最右侧一列的字体稍微调小，并设置 flex-shrink 彻底解决向右凸出的问题 -->
+                    <div style="display: flex; flex-direction: column; gap: 4px; flex-shrink: 0;">
+                        <span class="node node-x" style="padding: 3px 6px; font-size: 9px; white-space: nowrap;">$\hat{X}$ (Reconstruction)</span>
+                        <span class="node node-s" style="padding: 3px 6px; font-size: 9px; white-space: nowrap;">$\hat{S}$ (Inference)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 3: Concised Proof Methodology -->
+            <div class="card">
+                <h3>3. Solution Methodology & Proof</h3>
+                <p><strong>Theorem 1</strong> characterizes the State-Observation Rate-Distortion Function (SORDF) [2021]:</p>
+                
+                <div class="math-container">
+                    $$R(D_s, D_a) = \min_{p(\hat{s}, \hat{x}|x)} I(X; \hat{S}, \hat{X})$$
+                    $$\text{s.t. } \mathbb{E}[\hat{d}_s(X, \hat{S})] \le D_s, \quad \mathbb{E}[d_a(X, \hat{X})] \le D_a$$
+                </div>
+
+                <p><strong>Proof Methodology:</strong></p>
+                <ul>
+                    <li><strong>One-shot Equivalence:</strong> Prove $\mathbb{E}[d_s(S, \hat{S})] = \mathbb{E}[\hat{d}_s(X, \hat{S})]$ by exploiting the Markov chain $S \leftrightarrow X \leftrightarrow \hat{S}$ [10].</li>
+                    <li><strong>Tensorization:</strong> Extend the equivalence to multi-letter blocks using i.i.d. source properties.</li>
+                    <li><strong>Reduction:</strong> Convert the indirect problem into a standard lossy coding problem under dual constraints.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Column 2: Original Case Studies -->
+        <div class="column">
+            <!-- Box 4: Original Case Studies -->
+            <div class="card">
+                <h3>4. Original Case Studies</h3>
+                
+                <p><strong>Case 1: Jointly Gaussian Model</strong><br>When both $S$ and $X$ are jointly Gaussian, the optimal rate depends strictly on the active bottleneck region.</p>
+                
+                <!-- Figure 2 & 3 布局 -->
+                <div class="img-container" style="display: flex; gap: 12px; justify-content: center; margin: 15px 0; width: 100%;">
+                    <!-- Fig 2 容器 -->
+                    <div style="flex: 1; min-width: 180px; text-align: center;">
+                        <img src="images/fig2.png" alt="Figure 2" style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); background-color: #fff;">
+                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 2: $(D_s, D_a)$ 平面的五个工作区域区分图</div>
+                    </div>
+                    <!-- Fig 3 容器 -->
+                    <div style="flex: 1; min-width: 180px; text-align: center;">
+                        <img src="images/fig3.png" alt="Figure 3" style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); background-color: #fff;">
+                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 3: SORDF 3D 表面图及其等高线投影</div>
+                    </div>
+                </div>
+
+                <p><strong>Case 2: Binary Classification</strong><br>For binary Bernoulli states with conditionally Gaussian observations, the optimal rate and threshold weighting $g(x)$ are derived.</p>
+                
+                <!-- Figure 4 & 5 布局 -->
+                <div class="img-container" style="display: flex; gap: 12px; justify-content: center; margin: 15px 0; width: 100%;">
+                    <!-- Fig 4 容器 -->
+                    <div style="flex: 1; min-width: 180px; text-align: center;">
+                        <img src="../figures/fig4_left_gx.png" alt="Figure 4" 
+                             style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
+                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 4: 软权重函数 $g(x)$ 曲线</div>
+                    </div>
+                    <!-- Fig 5 容器 -->
+                    <div style="flex: 1; min-width: 180px; text-align: center;">
+                        <img src="../figures/fig5_joint_rd.png" alt="Figure 5" 
+                             style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
+                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 5: $R(D_s, D_a)$ 理论上界图</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: MNIST Replication -->
+        <div class="column">
+            <!-- Box 5: Your MNIST Work -->
+            <div class="card">
+                <h3>5. MNIST Experimental Verification</h3>
+                <p>We designed an end-to-end multi-task learning architecture to validate the framework using real-world handwritten digits.</p>
+                
+                <p><strong>Mapping Setup:</strong><br>• <strong>$X$:</strong> $28 \times 28$ image pixels. <br>• <strong>$S$:</strong> Label $\{0,1,...,9\}$ (using Hamming distortion) [10].</p>
+                
+                <p><strong>Joint Loss Function:</strong></p>
+                <div class="math-container">
+                    $$\mathcal{L} = \mathcal{L}_{\text{MSE}}(X, \hat{X}) + \beta \cdot \mathcal{L}_{\text{CE}}(S, \hat{S})$$
+                </div>
+                
+                <p><strong>Implementation Pipeline:</strong></p>
+                <ul>
+                    <li>Encoder compresses $X$ to latent variable $Z$.</li>
+                    <li>Reconstruction Decoder uses transposed CNN to produce $\hat{X}$ ($\mathcal{L}_{\text{MSE}}$).</li>
+                    <li>Classifier predicts category distribution $\hat{S}$ from $Z$ ($\mathcal{L}_{\text{CE}}$) [10].</li>
+                    <li>By sweeping $\beta$, we trace out the optimal $D_a-D_s$ boundary.</li>
+                </ul>
+
+                <!-- Placeholder for Custom MNIST results -->
+                <div class="img-placeholder" style="min-height: 180px;">
+                    <div class="fig-title">Figure 6: MNIST Validation Curves</div>
+                    <div class="fig-desc">【请在此贴入您实验跑出来的图】<br>1. 随 $\beta$ 权重变化，MNIST 重建 MSE 与分类错误率的折中散点图。<br>2. 比较“联合语义编码”与“先本地分类再压缩”方案在不同码率瓶颈下的错误率对比图，展现联合编码的绝对优势！</div>
+                </div>
+            </div>
+
+            <!-- Summary card -->
+            <div class="card" style="padding:15px 24px;">
+                <h3>6. Conclusion</h3>
+                <p>Our practical MNIST implementation successfully validates the theoretical bounds of SORDF. It empirically confirms that joint semantic-lossy coding yields superior performance limits compared to isolated processing pipelines.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        References: J. Liu, W. Zhang, and H. V. Poor, "A Rate-Distortion Framework for Characterizing Semantic Information," IEEE, 2021.
+    </footer>
+</div>
+
+</body>
+</html>
