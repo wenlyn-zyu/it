@@ -22,7 +22,7 @@
     </script>
 
     <style>
-        :root {
+    :root {
         --ink: #111827;
         --muted: #4b5563;
         --paper: #fffdf8;
@@ -45,7 +45,7 @@
 
     body {
         min-height: 100vh;
-        padding: 28px;
+        padding: 24px;
         display: flex;
         justify-content: center;
         align-items: flex-start;
@@ -56,7 +56,7 @@
 
     /* 3:2 landscape academic poster */
     .poster {
-        width: min(1440px, calc(100vw - 56px));
+        width: min(1440px, calc(100vw - 48px));
         aspect-ratio: 3 / 2;
         background:
             linear-gradient(90deg, rgba(23,63,58,0.04) 1px, transparent 1px),
@@ -66,355 +66,261 @@
         border: 1px solid rgba(17,24,39,0.18);
         border-radius: 10px;
         box-shadow: 0 28px 70px rgba(17,24,39,0.24);
-        padding: 30px;
+        padding: 24px;
         display: grid;
-        grid-template-rows: auto 1fr auto;
-        gap: 18px;
-        overflow: hidden;
+        grid-template-rows: auto minmax(0, 1fr) auto auto;
+        gap: 16px;
+        overflow: hidden; /* 严格防止溢出 */
     }
 
-    /* Smaller academic title bar */
+    /* Header 样式 */
     header {
         background: var(--deep);
         color: #fffaf0;
-        border-radius: 10px;
-        padding: 18px 28px 16px;
+        border-radius: 8px;
+        padding: 14px 20px;
         text-align: left;
-        border-bottom: none;
-        margin-bottom: 0;
-        position: relative;
-        overflow: hidden;
-    }
-
-    header::after {
-        content: "";
-        position: absolute;
-        right: -95px;
-        bottom: -130px;
-        width: 300px;
-        height: 300px;
-        border-radius: 50%;
-        border: 34px solid rgba(211,155,61,0.24);
     }
 
     header h1 {
-        position: relative;
-        z-index: 1;
         color: #fffaf0;
-        font-size: 36px;
-        line-height: 1.05;
+        font-size: 30px;
+        line-height: 1.1;
         font-weight: 900;
-        letter-spacing: -0.03em;
-        margin-bottom: 8px;
-    }
-
-    header h2 {
-        position: relative;
-        z-index: 1;
-        color: #dcebe7;
-        font-size: 16px;
-        line-height: 1.35;
-        font-weight: 500;
-        margin-bottom: 10px;
+        letter-spacing: -0.02em;
+        margin-bottom: 5px;
     }
 
     .meta-info {
-        position: relative;
-        z-index: 1;
         color: #eaf5f0;
-        font-size: 12px;
-        line-height: 1.45;
+        font-size: 11.5px;
         font-weight: 500;
     }
 
     .meta-info span {
-        margin: 0 10px;
+        margin: 0 8px;
     }
 
     .meta-info span:first-child {
         margin-left: 0;
     }
 
-    /* 3-column academic layout */
+    /* 三列等宽布局 */
     .grid-layout {
         display: grid;
-        grid-template-columns: 1fr 1.08fr 1fr;
-        gap: 18px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
         width: 100%;
+        height: 100%;
         min-height: 0;
     }
 
     .column {
         min-width: 0;
-        display: grid;
-        align-content: start;
-        gap: 14px;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        height: 100%;
     }
 
-    /* Card panels */
+    /* 卡片通用样式 */
     .card {
-        background: rgba(255,255,255,0.88);
+        background: rgba(255,255,255,0.92);
         border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 15px 17px;
-        margin-bottom: 0;
-        box-shadow: 0 8px 22px rgba(17,24,39,0.055);
+        border-radius: 8px;
+        padding: 14px 16px;
+        box-shadow: 0 4px 12px rgba(17,24,39,0.03);
+    }
+
+    /* 关键新增：让单卡片列垂直撑满，并等距散开内部元素 */
+    .card-stretch {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .card h3 {
         color: var(--deep);
-        font-size: 15px;
-        line-height: 1.15;
-        font-weight: 850;
+        font-size: 14px;
+        line-height: 1.2;
+        font-weight: 800;
         border-bottom: 2px solid var(--gold);
-        padding-bottom: 6px;
-        margin-bottom: 10px;
+        padding-bottom: 4px;
+        margin-bottom: 8px;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.03em;
     }
 
     .card p {
         color: var(--muted);
-        font-size: 12.2px;
-        line-height: 1.42;
-        margin-bottom: 8px;
+        font-size: 11.5px;
+        line-height: 1.38;
+        margin-bottom: 6px;
     }
 
-    .card ul {
+    .card ul, .card ol {
         color: var(--muted);
-        font-size: 12.2px;
-        line-height: 1.42;
-        padding-left: 18px;
-        margin-bottom: 8px;
+        font-size: 11.5px;
+        line-height: 1.38;
+        padding-left: 16px;
+        margin-bottom: 6px;
     }
 
     .card li {
-        margin-bottom: 4px;
+        margin-bottom: 3px;
     }
 
-    /* Math blocks */
+    .conclusion-box {
+    background: linear-gradient(135deg, #fff7e6, #ffffff);
+    border: 2px solid var(--gold);
+    border-left: 8px solid var(--deep);
+    border-radius: 8px;
+    padding: 24px 28px;
+    min-height: 100px;
+    color: var(--ink);
+    box-shadow: 0 4px 12px rgba(17,24,39,0.04);
+}
+
+    .conclusion-box h3 {
+        color: var(--deep);
+        font-size: 14px;
+        font-weight: 900;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .conclusion-box p {
+        color: var(--muted);
+        font-size: 11.5px;
+        line-height: 1.35;
+        margin: 0;
+    }
+
+
+    /* 数学公式容器 */
     .math-container {
         background: var(--soft-gold);
         border: 1px solid #ecd09a;
-        border-left: 5px solid var(--gold);
-        border-radius: 7px;
-        padding: 10px 12px;
-        margin: 10px 0;
-        text-align: center;
-        font-size: 12px;
-        overflow: hidden;
-    }
-
-    /* Flow diagram */
-    .flow-diagram {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 5px;
-        margin: 12px 0;
-        padding: 10px 8px;
-        background: #f6f8f4;
-        border: 1px dashed #bac9c1;
-        border-radius: 8px;
-        width: 100%;
-    }
-
-    .node {
-        padding: 6px 8px;
-        border-radius: 7px;
-        font-size: 10.5px;
-        font-weight: 850;
-        text-align: center;
-        line-height: 1.18;
-        flex-shrink: 0;
-    }
-
-    .node-s {
-        background: var(--red);
-        color: #fff;
-        border: 1px solid rgba(198,80,69,0.4);
-    }
-
-    .node-x {
-        background: var(--blue);
-        color: #fff;
-        border: 1px solid rgba(53,95,147,0.4);
-    }
-
-    .node-enc {
-        background: var(--green);
-        color: #fff;
-        border: 1px solid rgba(47,111,99,0.4);
-    }
-
-    .node-dec {
-        background: var(--gold);
-        color: #1f2937;
-        border: 1px solid rgba(211,155,61,0.4);
-    }
-
-    .arrow {
-        color: var(--deep);
-        font-weight: 900;
-        font-size: 13px;
-        flex-shrink: 0;
-    }
-
-    /* Figure placeholders styled as academic figures */
-    .img-placeholder {
-        border: 1px solid #dde4df;
-        background:
-            linear-gradient(180deg, transparent 0 24%, rgba(23,63,58,0.055) 24% 25%, transparent 25% 49%, rgba(23,63,58,0.055) 49% 50%, transparent 50% 74%, rgba(23,63,58,0.055) 74% 75%, transparent 75%),
-            linear-gradient(90deg, transparent 0 24%, rgba(23,63,58,0.055) 24% 25%, transparent 25% 49%, rgba(23,63,58,0.055) 49% 50%, transparent 50% 74%, rgba(23,63,58,0.055) 74% 75%, transparent 75%),
-            #ffffff;
-        border-radius: 8px;
-        min-height: 118px;
-        margin: 10px 0;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        text-align: center;
-        position: relative;
-    }
-
-    .img-placeholder::before {
-        content: "";
-        position: absolute;
-        left: 22px;
-        bottom: 20px;
-        width: 72%;
-        height: 56%;
-        border-left: 2px solid rgba(23,63,58,0.45);
-        border-bottom: 2px solid rgba(23,63,58,0.45);
-    }
-
-    .img-placeholder::after {
-        content: "";
-        position: absolute;
-        left: 42px;
-        bottom: 36px;
-        width: 48%;
-        height: 34%;
-        border-radius: 50%;
-        border-top: 4px solid rgba(198,80,69,0.85);
-        border-right: 4px solid transparent;
-        transform: rotate(-10deg);
-    }
-
-    .img-placeholder .fig-title {
-        position: relative;
-        z-index: 1;
-        background: rgba(255,255,255,0.86);
-        color: var(--deep);
-        border: 1px solid rgba(23,63,58,0.12);
+        border-left: 4px solid var(--gold);
         border-radius: 6px;
-        padding: 5px 8px;
-        font-weight: 800;
-        font-size: 11.5px;
-        margin-bottom: 5px;
-    }
-
-    .img-placeholder .fig-desc {
-        position: relative;
-        z-index: 1;
-        max-width: 90%;
-        background: rgba(255,255,255,0.82);
-        color: #55615c;
-        border-radius: 5px;
-        padding: 4px 6px;
-        font-size: 10.5px;
-        line-height: 1.3;
-    }
-
-    /* Make paired figures compact */
-    .card .img-placeholder + .img-placeholder {
-        margin-top: 8px;
-    }
-
-    /* Slightly reduce figure height in dense sections */
-    .column:nth-child(2) .img-placeholder {
-        min-height: 105px;
-    }
-
-    .column:nth-child(3) .img-placeholder {
-        min-height: 110px;
-    }
-
-    /* Footer */
-    footer {
-        margin-top: 0;
-        border-top: 1px solid rgba(23,63,58,0.24);
-        padding-top: 10px;
-        color: #64706c;
-        font-size: 10.5px;
-        line-height: 1.35;
+        padding: 8px 10px;
+        margin: 8px 0;
         text-align: center;
+        font-size: 11px;
+        overflow: hidden;
     }
 
-    /* MathJax spacing control */
     mjx-container {
         max-width: 100%;
         overflow-x: hidden;
     }
 
     .math-container mjx-container {
-        font-size: 92% !important;
+        font-size: 88% !important;
     }
 
-    /* Print version */
+    /* 流程图样式 */
+    .flow-diagram {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 4px;
+        margin: 8px 0;
+        padding: 8px;
+        background: #f6f8f4;
+        border: 1px dashed #bac9c1;
+        border-radius: 6px;
+        width: 100%;
+    }
+
+    .node {
+        padding: 5px 7px;
+        border-radius: 5px;
+        font-size: 9px;
+        font-weight: 800;
+        text-align: center;
+        line-height: 1.1;
+        flex-shrink: 1;
+        min-width: 0;
+    }
+
+    .node-s {
+        background: var(--red);
+        color: #fff;
+        border: 1px solid rgba(198,80,69,0.3);
+    }
+
+    .node-x {
+        background: var(--blue);
+        color: #fff;
+        border: 1px solid rgba(53,95,147,0.3);
+    }
+
+    .node-enc {
+        background: var(--green);
+        color: #fff;
+        border: 1px solid rgba(47,111,99,0.3);
+    }
+
+    .node-dec {
+        background: var(--gold);
+        color: #1f2937;
+        border: 1px solid rgba(211,155,61,0.3);
+    }
+
+    .arrow {
+        color: var(--deep);
+        font-weight: 900;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+
+    /* 图片及占位图样式 */
+    .img-placeholder {
+        border: 1px solid #dde4df;
+        background: #ffffff;
+        border-radius: 6px;
+        min-height: 100px;
+        margin: 6px 0;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .img-placeholder .fig-desc {
+        color: #55615c;
+        font-size: 9px;
+        line-height: 1.2;
+        margin-top: 6px;
+    }
+
+    /* 页脚 */
+    footer {
+        border-top: 1px solid rgba(23,63,58,0.18);
+        padding-top: 10px;
+        color: #64706c;
+        font-size: 10px;
+        text-align: center;
+    }
+
+    /* 打印与响应式适配 */
     @media print {
-        @page {
-            size: 36in 24in;
-            margin: 0;
-        }
-
-        body {
-            padding: 0;
-            background: #fff;
-        }
-
-        .poster {
-            width: 100vw;
-            height: 100vh;
-            box-shadow: none;
-            border: none;
-            border-radius: 0;
-        }
+        @page { size: 36in 24in; margin: 0; }
+        body { padding: 0; background: #fff; }
+        .poster { width: 36in; height: 24in; box-shadow: none; border: none; border-radius: 0; }
     }
 
-    /* Responsive fallback */
     @media (max-width: 900px) {
-        body {
-            padding: 14px;
-        }
-
-        .poster {
-            width: 100%;
-            height: auto;
-            aspect-ratio: auto;
-            overflow: visible;
-            padding: 18px;
-        }
-
-        .grid-layout {
-            grid-template-columns: 1fr;
-        }
-
-        header h1 {
-            font-size: 30px;
-        }
-
-        header h2 {
-            font-size: 15px;
-        }
-
-        .meta-info span {
-            display: block;
-            margin: 3px 0;
-        }
+        body { padding: 10px; }
+        .poster { width: 100%; height: auto; aspect-ratio: auto; padding: 12px; }
+        .grid-layout { grid-template-columns: 1fr; }
+        header h1 { font-size: 24px; }
     }
     </style>
 </head>
@@ -424,7 +330,6 @@
     <!-- Header -->
     <header>
         <h1>A Rate-Distortion Framework for Characterizing Semantic Information</h1>
-        
         <div class="meta-info">
             <span><strong>Presenter:</strong> [Your Name]</span> | 
             <span><strong>Baseline:</strong> Liu et al., IEEE 2021</span> | 
@@ -437,7 +342,7 @@
         
         <!-- Column 1: Background, Formulation & Proof -->
         <div class="column">
-            <!-- Box 1: Shortened Motivation -->
+            <!-- Box 1: Background & Motivation -->
             <div class="card">
                 <h3>1. Background & Motivation</h3>
                 <p><strong>The Gap:</strong> Shannon's theory excludes semantics, focusing purely on reconstructing bits. Traditional compression often leads to blurry images under low bitrates.</p>
@@ -449,7 +354,7 @@
                 <h3>2. Problem Modeling</h3>
                 <p>We model the memoryless source as $(S, X) \sim p(s,x)$. The encoder only observes $X$, while the decoder reconstructs both $S$ and $X$.</p>
                 
-                <!-- HTML Process Flow Diagram (已针对宽度溢出精细调优内联样式) -->
+                <!-- Flow Diagram -->
                 <div class="flow-diagram">
                     <div class="node node-s">S<br>(Intrinsic)</div>
                     <div class="arrow">→</div>
@@ -459,15 +364,14 @@
                     <div class="arrow">→</div>
                     <div class="node node-dec">Decoder</div>
                     <div class="arrow">→</div>
-                    <!-- 将最右侧一列的字体稍微调小，并设置 flex-shrink 彻底解决向右凸出的问题 -->
-                    <div style="display: flex; flex-direction: column; gap: 4px; flex-shrink: 0;">
-                        <span class="node node-x" style="padding: 3px 6px; font-size: 9px; white-space: nowrap;">$\hat{X}$ (Reconstruction)</span>
-                        <span class="node node-s" style="padding: 3px 6px; font-size: 9px; white-space: nowrap;">$\hat{S}$ (Inference)</span>
+                    <div style="display: flex; flex-direction: column; gap: 3px; flex-shrink: 0;">
+                        <span class="node node-x" style="padding: 2px 4px; font-size: 8.5px; white-space: nowrap;">$\hat{X}$ (Recon.)</span>
+                        <span class="node node-s" style="padding: 2px 4px; font-size: 8.5px; white-space: nowrap;">$\hat{S}$ (Inference)</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Box 3: Concised Proof Methodology -->
+            <!-- Box 3: Solution Methodology & Proof -->
             <div class="card">
                 <h3>3. Solution Methodology & Proof</h3>
                 <p><strong>Theorem 1</strong> characterizes the State-Observation Rate-Distortion Function (SORDF) [2021]:</p>
@@ -480,125 +384,117 @@
                 <p><strong>Proof Methodology:</strong></p>
                 <ul>
                     <li><strong>One-shot Equivalence:</strong> Prove $\mathbb{E}[d_s(S, \hat{S})] = \mathbb{E}[\hat{d}_s(X, \hat{S})]$ by exploiting the Markov chain $S \leftrightarrow X \leftrightarrow \hat{S}$ [10].</li>
-                    <li><strong>Tensorization:</strong> Extend the equivalence to multi-letter blocks using i.i.d. source properties.</li>
-                    <li><strong>Reduction:</strong> Convert the indirect problem into a standard lossy coding problem under dual constraints.</li>
+                    <li><strong>Tensorization:</strong> Extend to multi-letter blocks using i.i.d. properties.</li>
+                    <li><strong>Reduction:</strong> Convert into a standard dual-constrained lossy coding problem.</li>
                 </ul>
             </div>
         </div>
 
-        <!-- Column 2: Original Case Studies -->
+<!-- Column 2: Original Case Studies (取消 card-stretch，高度自适应内容自动缩短) -->
         <div class="column">
-            <!-- Box 4: Original Case Studies -->
-            <div class="card">
+            <div class="card card">
                 <h3>4. Original Case Studies</h3>
                 
-                <p><strong>Case 1: Jointly Gaussian Model</strong><br>When both $S$ and $X$ are jointly Gaussian, the optimal rate depends strictly on the active bottleneck region.</p>
-                
-                <!-- Figure 2 & 3 布局 -->
-                <div class="img-container" style="display: flex; gap: 12px; justify-content: center; margin: 15px 0; width: 100%;">
-                    <!-- Fig 2 容器 -->
-                    <div style="flex: 1; min-width: 180px; text-align: center;">
-                        <img src="images/fig2.png" alt="Figure 2" style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); background-color: #fff;">
-                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 2: $(D_s, D_a)$ 平面的五个工作区域区分图</div>
-                    </div>
-                    <!-- Fig 3 容器 -->
-                    <div style="flex: 1; min-width: 180px; text-align: center;">
-                        <img src="images/fig3.png" alt="Figure 3" style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); background-color: #fff;">
-                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 3: SORDF 3D 表面图及其等高线投影</div>
+                <div>
+                    <p><strong>Case 1: Jointly Gaussian Model</strong><br>When both $S$ and $X$ are jointly Gaussian, the optimal rate depends strictly on the active bottleneck region.</p>
+                    
+                    <!-- Figure 2 & 3 (适当放宽了 max-height 填充空白) -->
+                    <div style="display: flex; gap: 10px; justify-content: center; margin: 10px 0; width: 100%;">
+                        <div style="flex: 1; text-align: center;">
+                            <img src="../figures/figure2.png" alt="Figure 2" style="width: 100%; height: auto; max-height: 145px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
+                            <div style="font-size: 9px; color: #666; margin-top: 4px; line-height: 1.1;">Fig 2: $(D_s, D_a)$ 平面的五个工作区域区分图</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <img src="../figures/figure3.png" alt="Figure 3" style="width: 100%; height: auto; max-height: 145px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
+                            <div style="font-size: 9px; color: #666; margin-top: 4px; line-height: 1.1;">Fig 3: SORDF 3D 表面图及其等高线投影</div>
+                        </div>
                     </div>
                 </div>
 
-                <p><strong>Case 2: Binary Classification</strong><br>For binary Bernoulli states with conditionally Gaussian observations, the optimal rate and threshold weighting $g(x)$ are derived.</p>
-                
-                <!-- Figure 4 & 5 布局 -->
-                <div class="img-container" style="display: flex; gap: 12px; justify-content: center; margin: 15px 0; width: 100%;">
-                    <!-- Fig 4 容器 -->
-                    <div style="flex: 1; min-width: 180px; text-align: center;">
-                        <img src="../figures/fig4_left_gx.png" alt="Figure 4" 
-                             style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
-                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 4: 软权重函数 $g(x)$ 曲线</div>
-                    </div>
-                    <!-- Fig 5 容器 -->
-                    <div style="flex: 1; min-width: 180px; text-align: center;">
-                        <img src="../figures/fig5_joint_rd.png" alt="Figure 5" 
-                             style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
-                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 5: $R(D_s, D_a)$ 理论上界图</div>
+                <div>
+                    <p><strong>Case 2: Binary Classification</strong><br>For binary Bernoulli states with conditionally Gaussian observations, the optimal rate and threshold weighting $g(x)$ are derived.</p>
+                    
+                    <!-- Figure 4 & 5 (适当放宽了 max-height 填充空白) -->
+                    <div style="display: flex; gap: 10px; justify-content: center; margin: 10px 0; width: 100%;">
+                        <div style="flex: 1; text-align: center;">
+                            <img src="../figures/fig4_left_gx.png" alt="Figure 4" style="width: 100%; height: auto; max-height: 145px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
+                            <div style="font-size: 9px; color: #666; margin-top: 4px; line-height: 1.1;">Fig 4: 软权重函数 $g(x)$ 曲线</div>
+                        </div>
+                        <div style="flex: 1; text-align: center;">
+                            <img src="../figures/fig5_joint_rd.png" alt="Figure 5" style="width: 100%; height: auto; max-height: 145px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
+                            <div style="font-size: 9px; color: #666; margin-top: 4px; line-height: 1.1;">Fig 5: $R(D_s, D_a)$ 理论上界图</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Column 3: MNIST Replication -->
+        <!-- Column 3: MNIST Experimental Verification (取消 .card-stretch，高度自适应内容) -->
         <div class="column">
-            <!-- Box 5: Your MNIST Work -->
-            <!-- 5. MNIST EXPERIMENTAL VERIFICATION -->
-        <div class="card" style="border-top: 4px solid #5d5cd6; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px;">
-        
-        <h2 style="color: #1e293b; font-size: 1.5rem; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: bold;">
-            5. MNIST EXPERIMENTAL VERIFICATION
-        </h2>
+            <div class="card" style="border-top: 4px solid var(--blue);">
+                <div>
+                    <h3>5. MNIST Experimental Verification</h3>
+                    <p>To validate the generalized Information Bottleneck (IB) framework, we design an end-to-end multi-task lossy compression architecture integrating data reconstruction, perceptual quality, and classification accuracy.</p>
+                </div>
 
-        <p style="color: #475569; font-size: 0.95rem; line-height: 1.6; margin-bottom: 15px;">
-            To validate the generalized Information Bottleneck (IB) framework, we design an end-to-end multi-task lossy compression architecture integrating data reconstruction, perceptual quality, and classification accuracy.
-        </p>
+                <div>
+                    <p style="font-weight: bold; margin-top: 2px;">Problem Modeling &amp; Constraints:</p>
+                    <ul style="padding-left: 14px; margin-bottom: 2px;">
+                        <li><strong>Input $X$:</strong> $28 \times 28$ MNIST image pixels.</li>
+                        <li><strong>Semantic Target $S$:</strong> Digit label $\{0,1,\dots,9\}$ under Hamming distortion.</li>
+                        <li><strong>RDPC:</strong> $R(D, P, C) = \min_{p_{\hat{X}|X}} I(X; \hat{X})$
+                            <div style="font-size: 9.5px; margin-top: 3px; text-align: center;">
+                                s.t. $\mathbb{E}[\Delta(X, \hat{X})] \le D, \; d(p_X, p_{\hat{X}}) \le P, \; H(S|\hat{X}) \le C$
+                            </div>
+                        </li>
+                    </ul>
+                </div>
 
-        <!-- Problem Modeling Subsection -->
-        <h3 style="color: #334155; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px; font-weight: 600;">
-            Problem Modeling &amp; Constraints
-        </h3>
-        
-        <ul style="color: #475569; font-size: 0.9rem; line-height: 1.5; padding-left: 20px; margin-bottom: 15px;">
-            <li><strong>Input \(X\):</strong> \(28 \times 28\) MNIST image pixels.</li>
-            <li><strong>Semantic Target \(S\):</strong> Digit label \(\{0,1,\dots,9\}\) under Hamming distortion.</li>
-            <li><strong>Rate-Distortion-Perception-Classification (RDPC):</strong> 
-            $$R(D, P, C) = \min_{p_{\hat{X}|X}} I(X; \hat{X})$$
-            $$\text{s.t. } \mathbb{E}[\Delta(X, \hat{X})] \le D, \;\; d(p_X, p_{\hat{X}}) \le P, \;\; H(S|\hat{X}) \le C$$
-            </li>
-        </ul>
+                <!-- Joint Loss Function Block (增加了上下边距) -->
+                <div class="math-container" style="background-color: #f5f3ff; border-left: 4px solid #7c3aed; padding: 8px 10px; margin: 8px 0;">
+                    <p style="color: #4c1d95; font-weight: bold; font-size: 9.5px; margin-bottom: 3px; text-align: left;">Joint Loss Function:</p>
+                    $$\mathcal{L} = \lambda_d \mathcal{L}_{\mathrm{MSE}}(X, \hat{X}) + \lambda_p \mathcal{L}_{\mathrm{Perception}}(p_X, p_{\hat{X}}) + \lambda_c \mathcal{L}_{\mathrm{CE}}(s, \hat{s})$$
+                    <p style="color: #5b21b6; font-size: 8px; margin-top: 4px; line-height: 1.2; text-align: left;">
+                        *$\lambda_d, \lambda_p, \lambda_c$ control the tradeoff between pixel reconstruction (MSE), perceptual fidelity (Wasserstein-1 loss), and classification cross-entropy (CE).
+                    </p>
+                </div>
 
-        <!-- Joint Loss Function block with purple left border -->
-        <div style="background-color: #f5f3ff; border-left: 4px solid #7c3aed; padding: 15px; margin-bottom: 20px; border-radius: 0 4px 4px 0;">
-            <p style="color: #4c1d95; font-weight: bold; font-size: 0.9rem; margin-top: 0; margin-bottom: 8px;">Joint Loss Function:</p>
-            <div style="font-size: 1.05rem; color: #1e1b4b; text-align: center; margin: 10px 0;">
-            $$\mathcal{L} = \lambda_d \mathcal{L}_{\mathrm{MSE}}(X, \hat{X}) + \lambda_p \mathcal{L}_{\mathrm{Perception}}(p_X, p_{\hat{X}}) + \lambda_c \mathcal{L}_{\mathrm{CE}}(s, \hat{s})$$
+                <div>
+                    <p style="font-weight: bold; margin-top: 2px;">Experimental Pipeline:</p>
+                    <ol style="padding-left: 14px; margin-bottom: 2px;">
+                        <li><strong>Encoder $E$:</strong> Maps $X$ to quantized latent features $Z$ to bound rate $R$.</li>
+                        <li><strong>Generator $G$:</strong> Reconstructs $\hat{X}$ from $Z$ under joint multi-task gradients.</li>
+                        <li><strong>Discriminator $D$:</strong> Jointly trained to minimize Wasserstein-1 distance.</li>
+                        <li><strong>Classifier $C$:</strong> Pre-trained and frozen network calculating classification accuracy.</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <p style="font-weight: bold; margin-top: 2px;">Experimental Results:</p>
+                    <div class="img-placeholder" style="min-height: 120px; margin-top: 4px;">
+                        <img src="figures/figure3.png" alt="MNIST Experimental Results" style="max-height: 110px; max-width: 95%; object-fit: contain; border-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);">
+                        <div class="fig-desc">Fig 6: Rate-Distortion-Perception-Classification (RDPC) Tradeoff and Reconstructed Samples on MNIST Dataset.</div>
+                    </div>
+                </div>
             </div>
-            <p style="color: #5b21b6; font-size: 0.8rem; margin-bottom: 0; line-height: 1.4;">
-            *Where \(\lambda_d, \lambda_p, \lambda_c\) control the tradeoff between pixel reconstruction (MSE), perceptual fidelity (Wasserstein-1 loss), and classification cross-entropy (CE).
-            </p>
         </div>
+        
+    </div> <!-- Closes .grid-layout -->
 
-        <!-- Implementation Pipeline Subsection -->
-        <h3 style="color: #334155; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px; font-weight: 600;">
-            Experimental Pipeline
-        </h3>
-        <ol style="color: #475569; font-size: 0.9rem; line-height: 1.6; padding-left: 20px; margin-bottom: 20px;">
-            <li style="margin-bottom: 5px;"><strong>Encoder \(E\):</strong> Maps source image \(X\) into quantized latent features \(Z\) to bound compression rate \(R\).</li>
-            <li style="margin-bottom: 5px;"><strong>Generator \(G\):</strong> Reconstructs \(\hat{X}\) from latent features \(Z\) under joint multi-task gradients.</li>
-            <li style="margin-bottom: 5px;"><strong>Discriminator \(D\):</strong> Jointly trained to minimize Wasserstein-1 distance, enforcing perfect realism and avoiding blurred outputs.</li>
-            <li style="margin-bottom: 5px;"><strong>Classifier \(C\):</strong> Pre-trained and frozen network calculating the classification accuracy and feedback loss.</li>
-        </ol>
-
-        <!-- Results Figure Placeholder (留出的图片位置) -->
-        <h3 style="color: #334155; font-size: 1.1rem; margin-top: 20px; margin-bottom: 10px; font-weight: 600; border-top: 1px dashed #e2e8f0; padding-top: 15px;">
-            Experimental Results
-        </h3>
-        <div style="text-align: center; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 6px; padding: 30px 10px; margin-top: 10px;">
-            <!-- 您可以在此处将 src 替换为您的结果图片，如 figures/mnist_tradeoff.png -->
-            <img src="figures/figure3.png" alt="MNIST Experimental Results Placeholder" style="max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-            <p style="color: #64748b; font-size: 0.85rem; margin-top: 12px; margin-bottom: 0; font-style: italic;">
-            Fig 5: Rate-Distortion-Perception-Classification (RDPC) Tradeoff and Reconstructed Samples on MNIST Dataset.
-            </p>
-        </div>
-
-        </div>
-
+    <!-- Conclusion Box -->
+    <div class="conclusion-box">
+        <h3>Conclusion</h3>
+        <p>
+            Semantic rate-distortion theory extends classical compression by jointly considering reconstruction fidelity and task-oriented inference. 
+            The SORDF formulation provides a principled way to characterize the tradeoff among bitrate, appearance distortion, and semantic distortion. 
+            The MNIST experiment further demonstrates that semantic-aware compression can preserve classification-relevant information even under constrained rates.
+        </p>
     </div>
-
     <!-- Footer -->
     <footer>
         References: J. Liu, W. Zhang, and H. V. Poor, "A Rate-Distortion Framework for Characterizing Semantic Information," IEEE, 2021.
     </footer>
-</div>
+</div> <!-- Closes .poster -->
 
 </body>
 </html>

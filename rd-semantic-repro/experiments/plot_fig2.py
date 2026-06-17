@@ -1,7 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
+import os
 
+FIGURE_DIR = os.path.join("figures")
+os.makedirs(FIGURE_DIR, exist_ok=True)
 # 设置图表字体与样式以接近学术论文风格
 rcParams['font.family'] = 'serif'
 rcParams['axes.unicode_minus'] = False
@@ -134,6 +137,12 @@ def draw_figure_2():
     plt.grid(True, linestyle=':', alpha=0.5)
     plt.tight_layout()
 
+    plt.savefig(
+        os.path.join(FIGURE_DIR, "figure2.png"),
+        dpi=300,
+        bbox_inches='tight'
+    )
+
 # ==========================================
 # 4. 绘制 Figure 3 (3D 表面与等高线图)
 # ==========================================
@@ -197,6 +206,11 @@ def draw_figure_3():
     ax2.grid(True, linestyle=':', alpha=0.5)
     
     plt.suptitle(r'Fig. 3. The SORDF $R(D_{\mathrm{s}}, D_{\mathrm{a}})$ (left) and its contour plot (right)', fontsize=12, y=0.05)
+    plt.savefig(
+    os.path.join(FIGURE_DIR, "figure3.png"),
+    dpi=300,
+    bbox_inches='tight'
+)
     plt.tight_layout()
 
 # ==========================================
