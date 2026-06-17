@@ -11,3 +11,7 @@ results/
 *.out
 *.snm
 *.toc
+
+# Claude Code local config and secrets
+.env
+.claude/

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semantic Rate-Distortion: From Theory to Deep Learning</title>
+<style>
+  @page { size: A0 landscape; margin: 0; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: #e8ecf1;
+    display: flex; justify-content: center; padding: 20px;
+  }
+
+  .poster {
+    width: 1320mm;  /* ~A0 landscape */
+    max-width: 100%;
+    background: white;
+    display: flex; flex-direction: column;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+  }
+
+  /* ── Header ── */
+  .header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b3a5c 50%, #1a5276 100%);
+    color: white; padding: 28px 60px; text-align: center;
+  }
+  .header h1 {
+    font-size: 52px; font-weight: 800; letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .header .subtitle {
+    font-size: 26px; font-weight: 300; opacity: 0.9;
+    margin-bottom: 6px;
+  }
+  .header .meta {
+    font-size: 20px; opacity: 0.7; margin-top: 4px;
+  }
+
+  /* ── Main columns ── */
+  .columns {
+    display: flex; flex: 1; padding: 24px 36px 18px 36px;
+    gap: 22px; min-height: 0;
+  }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 18px; }
+
+  /* ── Blocks ── */
+  .block {
+    border: 1px solid #d5dce4; border-radius: 8px; overflow: hidden;
+    background: #fafbfc;
+  }
+  .block .block-title {
+    background: #1b3a5c; color: white;
+    padding: 12px 18px; font-size: 21px; font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+  .block .block-title.teal  { background: #1a6e5c; }
+  .block .block-title.coral { background: #c0392b; }
+  .block .block-title.navy  { background: #1b3a5c; }
+  .block .block-body {
+    padding: 16px 20px; font-size: 17px; line-height: 1.55;
+    color: #1e293b;
+  }
+  .block .block-body p { margin-bottom: 10px; }
+  .block .block-body ul { margin: 6px 0 10px 22px; }
+  .block .block-body li { margin-bottom: 4px; }
+
+  /* ── Alert (highlight) block ── */
+  .alert-block {
+    border-left: 5px solid #e67e22; background: #fef9f3;
+    border-radius: 6px; padding: 16px 20px;
+  }
+  .alert-block .alert-title {
+    font-size: 20px; font-weight: 700; color: #c0641a; margin-bottom: 8px;
+  }
+  .alert-block .alert-body { font-size: 17px; line-height: 1.55; color: #4a3724; }
+  .alert-block .alert-body ul { margin: 4px 0 0 20px; }
+  .alert-block .alert-body li { margin-bottom: 3px; }
+
+  /* ── Figures ── */
+  figure { margin: 10px 0; text-align: center; }
+  figure img { max-width: 100%; border-radius: 4px; border: 1px solid #e2e8f0; }
+  figure figcaption {
+    font-size: 15px; color: #64748b; margin-top: 5px;
+    font-style: italic;
+  }
+
+  /* ── Tables ── */
+  table {
+    width: 100%; border-collapse: collapse; margin: 10px 0;
+    font-size: 16px;
+  }
+  table th {
+    background: #1b3a5c; color: white; padding: 8px 10px;
+    text-align: center; font-weight: 600;
+  }
+  table td {
+    padding: 7px 10px; text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  table tr:nth-child(even) { background: #f1f5f9; }
+  table tr:last-child { font-weight: 700; }
+
+  /* ── Inline math ── */
+  .math {
+    font-family: 'Latin Modern Math', 'Cambria Math', 'DejaVu Serif', serif;
+    font-style: italic;
+  }
+
+  /* ── Key-value list ── */
+  .kv-grid {
+    display: grid; grid-template-columns: 1fr 2fr; gap: 4px 10px;
+    font-size: 16px; margin: 8px 0;
+  }
+  .kv-grid .kv { font-weight: 600; color: #1b3a5c; }
+
+  /* ── Footer ── */
+  .footer {
+    background: #0d1b2a; color: #94a3b8;
+    padding: 14px 48px; font-size: 15px; text-align: center;
+  }
+  .footer code { color: #f0c060; }
+
+  /* ── Tag chips ── */
+  .tag {
+    display: inline-block; background: #e8f0fe; color: #1a56a0;
+    padding: 2px 10px; border-radius: 12px; font-size: 14px;
+    font-weight: 600; margin: 1px 3px;
+  }
+
+  /* ── Responsive scaling for screen ── */
+  @media screen and (max-width: 1600px) {
+    .poster { width: 100%; }
+    .header h1 { font-size: 36px; }
+    .header .subtitle { font-size: 20px; }
+    .block .block-title { font-size: 17px; padding: 9px 14px; }
+    .block .block-body { font-size: 14px; padding: 12px 16px; }
+    table { font-size: 13px; }
+  }
+</style>
+
+<!-- MathJax for LaTeX rendering -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+  },
+  svg: { fontCache: 'global' },
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<div class="poster">
+
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <div class="header">
+    <h1>Semantic Rate-Distortion: From Theory to Deep Learning</h1>
+    <div class="subtitle">
+      Numerical Reproduction of Gaussian &amp; Binary Case Studies &ensp;|&ensp;
+      RDPC Extension on MNIST with Perception &amp; Classification Constraints
+    </div>
+    <div class="meta">
+      Based on: Liu, Zhang &amp; Poor (IEEE ISIT 2021) &ensp;&amp;&ensp;
+      Task-Oriented Lossy Compression (IEEE JSAC 2025)
+    </div>
+  </div>
+
+  <!-- ═══════════════ THREE COLUMNS ═══════════════ -->
+  <div class="columns">
+
+    <!-- ──────── COLUMN 1 ──────── -->
+    <div class="col">
+
+      <!-- Problem Formulation -->
+      <div class="block">
+        <div class="block-title navy">1. Problem Formulation: The (S, X) Semantic Source</div>
+        <div class="block-body">
+          <p>
+            A memoryless information source is modeled as a tuple of random variables
+            $(S, X) \sim p(s, x)$:
+          </p>
+          <div class="kv-grid">
+            <span class="kv">$S$</span><span>Intrinsic <strong>semantic state</strong> — not directly observable (e.g., digit label)</span>
+            <span class="kv">$X$</span><span>Extrinsic <strong>appearance observation</strong> — what the encoder sees (e.g., image)</span>
+            <span class="kv">$\hat S$</span><span>Reconstructed semantic estimate at decoder</span>
+            <span class="kv">$\hat X$</span><span>Reconstructed appearance at decoder</span>
+          </div>
+          <p><strong>Core Markov Chain:</strong> $S \leftrightarrow X \leftrightarrow (\hat S, \hat X)$</p>
+          <p>The encoder <em>only</em> observes $X$; the decoder must reconstruct <em>both</em> $\hat S$ and $\hat X$ under two distortion constraints:</p>
+          <ul>
+            <li><strong>Semantic distortion:</strong> $d_s(s, \hat s)$ — e.g., Hamming distance, cross-entropy</li>
+            <li><strong>Appearance distortion:</strong> $d_a(x, \hat x)$ — e.g., squared error, MSE</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SORDF Definition -->
+      <div class="block">
+        <div class="block-title navy">2. State-Observation Rate-Distortion Function (SORDF)</div>
+        <div class="block-body">
+          <p>The fundamental limit is the <strong>SORDF</strong>:</p>
+          $$R(D_s, D_a) = \min_{p(\hat s, \hat x|x)} I(X; \hat S, \hat X)$$
+          $$\text{s.t. } \mathbb{E}\,\hat d_s(X, \hat S) \leq D_s,\quad \mathbb{E}\,d_a(X, \hat X) \leq D_a$$
+
+          <p><strong>Theorem 1 (Equivalent Distortion):</strong> The unobservable semantic distortion can be transformed into an observable form:</p>
+          $$\hat d_s(x, \hat s) = \frac{1}{p(x)}\sum_s p(s, x)\, d_s(s, \hat s) = \mathbb{E}[d_s(S, \hat s) \mid X = x]$$
+
+          <p><strong>Key Properties (Proposition 1):</strong></p>
+          <ul>
+            <li><span class="tag">Monotonicity</span> $R(D_s, D_a)$ decreases as $D_s$ or $D_a$ increase</li>
+            <li><span class="tag">Convexity</span> $R(D_s, D_a)$ is jointly convex in $(D_s, D_a)$</li>
+            <li><span class="tag">Boundary</span> $R = 0$ when constraints are loose enough</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Binary Classification -->
+      <div class="block">
+        <div class="block-title teal">3. Binary Classification: $R(D_s, \infty)$ (Prop. 5)</div>
+        <div class="block-body">
+          <p><strong>Model:</strong> $S \sim \text{Bernoulli}(1/2)$,&ensp;
+          $X|S=0 \sim \mathcal{N}(A, \sigma^2)$,&ensp;
+          $X|S=1 \sim \mathcal{N}(-A, \sigma^2)$</p>
+
+          <p><strong>Optimal soft decision:</strong></p>
+          $$g(x) = P(\hat S = 0 \mid X = x) = \left[1 + \exp\!\left(\lambda \cdot \frac{1 - e^{-2Ax/\sigma^2}}{1 + e^{-2Ax/\sigma^2}}\right)\right]^{-1}$$
+
+          <p><strong>Rate:</strong>
+          $R(D_s, \infty) = 1 - \frac{1}{2}\int_{-\infty}^{\infty}[N^+(x) + N^-(x)]\, h_2(g(x))\,dx$</p>
+
+          <p>$\lambda < 0$ is solved numerically via bisection from the constraint $\int (N^+ - N^-)g\,dx = 1 - 2D_s$.</p>
+
+          <ul>
+            <li>$D_s = Q(A/\sigma)$ &rarr; $R = 1$ bit (Bayes-optimal hard decision)</li>
+            <li>$D_s = 0.5$ &rarr; $R = 0$ bits (random guessing)</li>
+            <li>As $D_s$ relaxes, $g(x)$ flattens &mdash; less certainty needed</li>
+          </ul>
+
+          <figure>
+            <img src="figures/binary_soft_decision_a1_sigma1.png" alt="Soft decision g(x)">
+            <figcaption>Soft decision $g(x)$ becomes sharper as $D_s$ approaches Bayes error</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- Binary Upper Bound -->
+      <div class="block">
+        <div class="block-title teal">4. Finite Appearance: $R(D_s, D_a)$ Upper Bound (Prop. 6)</div>
+        <div class="block-body">
+          <p>A two-stage achievable scheme:</p>
+          $$R(D_s, D_a) \leq \min_{D \in [Q(A/\sigma),\, D_s]} \left\{ R(D, \infty) + \frac{1}{2}\left[\log\frac{\eta}{D_a}\right]^+ \right\}$$
+
+          <ol>
+            <li><strong>Semantic encoding:</strong> compress $X \to \hat S$ at rate $R(D, \infty)$</li>
+            <li><strong>Appearance refinement:</strong> encode residual $X - \mathbb{E}[X|\hat S]$ with Gaussian codebook</li>
+          </ol>
+
+          <p>$\eta = \text{Var}(X \mid \hat S)$ is computed via numerical integration over $g_D(x)$.</p>
+
+          <figure>
+            <img src="figures/binary_upper_bound_a2sqrt10_sigma1.png" alt="Upper bound">
+            <figcaption>Achievable upper bound vs. optimal (S known) and naive (ignore S) baselines</figcaption>
+          </figure>
+        </div>
+      </div>
+
+    </div><!-- /col1 -->
+
+    <!-- ──────── COLUMN 2 ──────── -->
+    <div class="col">
+
+      <!-- Scalar Gaussian -->
+      <div class="block">
+        <div class="block-title navy">5. Scalar Gaussian SORDF (Prop. 3)</div>
+        <div class="block-body">
+          <p>For $(S, X)$ jointly Gaussian (scalar), squared-error distortions:</p>
+          $$R(D_s, D_a) = \frac{1}{2}\max\!\left\{ \left[\log\frac{\Sigma_X}{D_a}\right]^+,\; \left[\log\frac{\Sigma_{SX}^2}{\Sigma_X(D_s - \text{mmse})}\right]^+ \right\}$$
+
+          <p>where $\text{mmse} = \mathbb{E}[(S - \mathbb{E}[S|X])^2]$ is the irreducible estimation error.</p>
+
+          <p><strong>Two regimes:</strong></p>
+          <ul>
+            <li><strong>Appearance-dominated:</strong> $\frac{D_a}{\Sigma_X} < \frac{D_s - \text{mmse}}{\Sigma_{SX}^2/\Sigma_X}$ &rarr; rate set by appearance</li>
+            <li><strong>Semantic-dominated:</strong> the opposite &rarr; rate set by semantic requirement</li>
+          </ul>
+
+          <figure>
+            <img src="figures/scalar_sordf_contour.png" alt="Scalar Gaussian contour">
+            <figcaption>Rate contours in $(D_s, D_a)$ plane. Rate = max of two competing constraints.</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- Vector Gaussian -->
+      <div class="block">
+        <div class="block-title navy">6. Vector Gaussian: Five-Region Structure (Prop. 4)</div>
+        <div class="block-body">
+          <p><strong>Model:</strong> $X = \mathbf{1}_m S + Z$, where $S \sim \mathcal{N}(0, \sigma_S^2)$, $Z \sim \mathcal{N}(0, \sigma_Z^2 I_m)$.</p>
+
+          <p>Apply orthogonal transform to diagonalize: $m$ independent Gaussian channels, only <em>one</em> carries semantic information. The distortion-allocation problem yields <strong>five distinct regions</strong>:</p>
+
+          <table>
+            <tr><th>Region</th><th>Condition</th><th>Physical Meaning</th></tr>
+            <tr><td>S1: Zero-rate</td><td>Both constraints loose</td><td>No encoding needed</td></tr>
+            <tr><td>S2: Appearance-driven</td><td>Appearance constraint tight</td><td>All $m$ channels encoded</td></tr>
+            <tr><td>S3: Semantic-driven</td><td>Semantic constraint tight</td><td>Only semantic channel encoded</td></tr>
+            <tr><td>S4: Mixed boundary</td><td>Boundary interaction</td><td>One constraint dominates at margin</td></tr>
+            <tr><td><strong>S5: TRADEOFF</strong></td><td>Genuine competition</td><td>Rate must be split across both goals</td></tr>
+          </table>
+
+          <figure>
+            <img src="figures/figure2.png" alt="Five regions" style="max-width:48%;">
+            <img src="figures/gaussian_vector_sordf_m2_contour.png" alt="Vector contour" style="max-width:48%;">
+            <figcaption>Left: Five-region diagram (m=3). Right: Rate contour (m=2). Slanted boundaries mark the TRADEOFF region.</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <!-- RDPC Framework -->
+      <div class="block">
+        <div class="block-title coral">7. From SORDF to RDPC: The Deep Learning Extension</div>
+        <div class="block-body">
+          <p>The 2025 JSAC paper extends classical rate-distortion with <strong>three simultaneous constraints</strong>:</p>
+          $$R(D, P, C) = \min_{p_{\hat X|X}} I(X; \hat X)$$
+          $$\begin{aligned}
+          \text{(1a) Distortion:}&\quad \mathbb{E}[\Delta(X, \hat X)] \leq D \\
+          \text{(1b) Perception:}&\quad d(p_X, p_{\hat X}) \leq P \quad\text{(Wasserstein-1)} \\
+          \text{(1c) Classification:}&\quad H(S \mid \hat X) \leq C \quad\text{(Information Bottleneck)}
+          \end{aligned}$$
+
+          <p><strong>Key Insight — Hamming → Cross-Entropy Degeneration:</strong></p>
+          <p>Replacing Hamming distortion $d_s(s,\hat s) = \mathbf{1}[s \neq \hat s]$ with cross-entropy loss degenerates the semantic constraint into the <strong>Information Bottleneck</strong> form:</p>
+          $$\mathcal{L}_{\text{CE}}(S, \hat S) = -\sum_{c} \mathbf{1}[S=c] \log p(\hat S = c \mid X)$$
+
+          <p>When $\lambda_p = 0$, the framework reduces exactly to <strong>Variational Information Bottleneck (VIB)</strong>.</p>
+        </div>
+      </div>
+
+    </div><!-- /col2 -->
+
+    <!-- ──────── COLUMN 3 ──────── -->
+    <div class="col">
+
+      <!-- RDPC Architecture -->
+      <div class="block">
+        <div class="block-title coral">8. RDPC on MNIST: Deep Architecture</div>
+        <div class="block-body">
+          <p><strong>System Pipeline:</strong></p>
+          <p style="text-align:center; font-size:15px; line-height:1.7;">
+            $S$ (label) &rarr; $X$ (28&times;28) &rarr;
+            <strong style="color:#1b3a5c;">Encoder</strong> &rarr;
+            $Z \in \mathbb{R}^k$ &rarr;
+            <strong style="color:#1b3a5c;">Decoder</strong> &rarr;
+            $\hat X$ &rarr;
+            <strong style="color:#1a6e5c;">Classifier</strong> &rarr;
+            $\hat S$
+            <br>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            $\uparrow$
+            <br>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            <strong style="color:#c0392b;">Discriminator (WGAN-GP)</strong>
+          </p>
+
+          <table>
+            <tr><th>Network</th><th>Architecture</th><th>Output</th></tr>
+            <tr>
+              <td><strong>Encoder</strong></td>
+              <td>Conv 32→64→128 + FC</td>
+              <td>$Z \in \mathbb{R}^k$</td>
+            </tr>
+            <tr>
+              <td><strong>Decoder</strong></td>
+              <td>FC + ConvT 128→64→32→1</td>
+              <td>$\hat X \in [0,1]^{28\times28}$</td>
+            </tr>
+            <tr>
+              <td><strong>Discriminator</strong></td>
+              <td>Conv 32→64→128 + FC→1 (no sigmoid)</td>
+              <td>Scalar critic score</td>
+            </tr>
+            <tr>
+              <td><strong>Classifier</strong></td>
+              <td>Conv 32→64→128 + Pool + FC→10</td>
+              <td>10-class logits (frozen)</td>
+            </tr>
+          </table>
+
+          <p><strong>Rate Estimation:</strong> Since $I(X; Z)$ is intractable for continuous $Z$, we use the <em>Gaussian entropy upper bound</em>:</p>
+          $$R \approx \frac{1}{2}\sum_{i=1}^{k} \log_2(1 + \sigma_i^2)$$
+          <p>The bottleneck dimension $k$ implicitly controls the rate &mdash; smaller $k$ = stronger compression.</p>
+        </div>
+      </div>
+
+      <!-- Training Strategy -->
+      <div class="block">
+        <div class="block-title coral">9. Loss Function &amp; Alternating Training</div>
+        <div class="block-body">
+          <p><strong>Joint Lagrangian relaxation:</strong></p>
+          $$\mathcal{L}_{\text{train}} = \underbrace{\lambda_d \cdot \text{MSE}(X, \hat X)}_{\text{Distortion (1a)}} \;-\; \underbrace{\lambda_p \cdot \mathbb{E}[D(\hat X)]}_{\text{Perception (1b)}} \;+\; \underbrace{\lambda_c \cdot \text{CE}(S, \hat S)}_{\text{Classification (1c)}}$$
+
+          <p><strong>WGAN-GP alternating schedule:</strong></p>
+          <table>
+            <tr><th>Step</th><th>Networks</th><th>Loss</th></tr>
+            <tr>
+              <td>Critic (&times;5)</td>
+              <td>Discriminator</td>
+              <td>$W_1 = \mathbb{E}[D(\hat X)] - \mathbb{E}[D(X)] + 10 \cdot \text{GP}$</td>
+            </tr>
+            <tr>
+              <td>Generator (&times;1)</td>
+              <td>Encoder + Decoder</td>
+              <td>$\lambda_d \text{MSE} - \lambda_p \mathbb{E}[D(\hat X)] + \lambda_c \text{CE}$</td>
+            </tr>
+          </table>
+
+          <p><strong>Gradient Penalty (GP):</strong> enforces 1-Lipschitz constraint on the critic via random interpolations $\tilde x = \epsilon x + (1-\epsilon)\hat x$:</p>
+          $$\text{GP} = \mathbb{E}_{\tilde x}\left[(\|\nabla_{\tilde x} D(\tilde x)\|_2 - 1)^2\right]$$
+
+          <p><strong>Classifier Pretraining:</strong> 5 epochs on real MNIST &rarr; 96.55% test accuracy, then frozen.</p>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="block">
+        <div class="block-title coral">10. RDPC Experimental Results (k=8)</div>
+        <div class="block-body">
+          <table>
+            <tr><th>Epoch</th><th>Rate $R$ (bits)</th><th>MSE</th><th>Accuracy</th></tr>
+            <tr><td>1</td><td>14.90</td><td>50.79</td><td>96.62%</td></tr>
+            <tr><td>3</td><td>20.51</td><td>36.07</td><td>97.84%</td></tr>
+            <tr><td>5</td><td>22.21</td><td>32.88</td><td>98.26%</td></tr>
+            <tr><td>7</td><td>23.42</td><td>30.95</td><td>98.31%</td></tr>
+            <tr><td>9</td><td>24.18</td><td>29.46</td><td>98.29%</td></tr>
+            <tr style="background:#fef3c7;"><td><strong>10</strong></td><td><strong>24.86</strong></td><td><strong>29.52</strong></td><td><strong>98.49%</strong></td></tr>
+          </table>
+
+          <p><strong>Key Observations:</strong></p>
+          <ol>
+            <li><strong>Information Bottleneck effect:</strong> classification accuracy (98.49%) on compressed reconstructions <em>exceeds</em> accuracy on real images (96.55%) — the autoencoder implicitly filters out classification-irrelevant pixel noise.</li>
+            <li><strong>Rate-Distortion-Classifcation tradeoff:</strong> $R \uparrow$ from 14.90 to 24.86 bits, MSE $\downarrow$ from 50.79 to 29.52, Accuracy $\uparrow$ from 96.62% to 98.49%.</li>
+            <li><strong>Synergy of three constraints:</strong> MSE drives pixel fidelity, WGAN-GP drives distributional realism, cross-entropy preserves semantic discriminability.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="alert-block">
+        <div class="alert-title">Summary &amp; Contributions</div>
+        <div class="alert-body">
+          <ul>
+            <li><strong>Theory (RD):</strong> Full numerical reproduction of the 2021 ISIT semantic rate-distortion framework — 26 automated verification tests encoding paper theorems as executable checks.</li>
+            <li><strong>Extension (RDPC):</strong> Degenerated Hamming distortion to cross-entropy, added WGAN-GP perception constraint, and implemented joint Distortion-Perception-Classification compression on MNIST.</li>
+            <li><strong>Connection:</strong> Demonstrated that when $\lambda_p = 0$, RDPC reduces to Variational Information Bottleneck (VIB) — bridging classical rate-distortion theory with modern deep learning.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Hyperparameter Guide -->
+      <div class="block">
+        <div class="block-title navy">Hyperparameter Tuning Guide</div>
+        <div class="block-body">
+          <table>
+            <tr><th>Goal</th><th>Adjustment</th></tr>
+            <tr><td>Lower rate (stronger compression)</td><td>Decrease bottleneck $k$</td></tr>
+            <tr><td>Better reconstruction</td><td>Increase $\lambda_d$ or $k$</td></tr>
+            <tr><td>More realistic images</td><td>Increase $\lambda_p$</td></tr>
+            <tr><td>Higher classification accuracy</td><td>Increase $\lambda_c$</td></tr>
+            <tr><td>More stable training</td><td>Increase GP weight, decrease $lr_d$</td></tr>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /col3 -->
+
+  </div><!-- /columns -->
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <div class="footer">
+    <strong>Papers:</strong>
+    J. Liu, W. Zhang &amp; H. V. Poor, "A Rate-Distortion Framework for Characterizing Semantic Information," <em>IEEE ISIT</em>, 2021 &ensp;|&ensp;
+    "Task-Oriented Lossy Compression With Data, Perception, and Classification Constraints," <em>IEEE JSAC</em>, 2025
+    &ensp;|&ensp;
+    <strong>Code:</strong> <code>rd-semantic-repro/</code> &amp; <code>rdpc_mnist/</code>
+    &ensp;|&ensp;
+    <strong>Tests:</strong> 26 passed (RD) + 6 passed (RDPC models)
+  </div>
+
+</div><!-- /poster -->
+
+</body>
+</html>
