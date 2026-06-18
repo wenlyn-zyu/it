@@ -5,579 +5,141 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semantic Rate-Distortion: From Theory to Deep Learning</title>
 <style>
-  /* =========================
-     3:2 Academic Poster Layout
-     Print size: 36in × 24in
-     ========================= */
+  @page { size: A0 landscape; margin: 0; }
 
-  @page {
-    size: 36in 24in;
-    margin: 0;
-  }
-
-  :root {
-    --ink: #111827;
-    --muted: #4b5563;
-    --paper: #fffdf8;
-    --wash: #f5f8f6;
-    --line: #d6ded8;
-
-    --deep: #173f3a;
-    --navy: #1b3a5c;
-    --teal: #1a6e5c;
-    --coral: #c0392b;
-    --gold: #d39b3d;
-
-    --soft-blue: #eef4fb;
-    --soft-gold: #fff7e6;
-    --soft-red: #fff1ef;
-  }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  html,
-  body {
-    width: 100%;
-    min-height: 100%;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    background: #dfe5e3;
-    color: var(--ink);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 24px;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    background: #e8ecf1;
+    display: flex; justify-content: center; padding: 20px;
   }
-
-  /* =========================
-     Poster: strict 3:2 ratio
-     ========================= */
 
   .poster {
-    width: min(1440px, calc(100vw - 48px));
-    aspect-ratio: 3 / 2;
-
-    background:
-      linear-gradient(90deg, rgba(23, 63, 58, 0.04) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(23, 63, 58, 0.035) 1px, transparent 1px),
-      var(--paper);
-    background-size: 36px 36px;
-
-    border: 1px solid rgba(17, 24, 39, 0.18);
-    border-radius: 10px;
-    box-shadow: 0 28px 70px rgba(17, 24, 39, 0.24);
-
-    padding: 22px;
-
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    gap: 14px;
-
-    overflow: hidden;
+    width: 1320mm;  /* ~A0 landscape */
+    max-width: 100%;
+    background: white;
+    display: flex; flex-direction: column;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.15);
   }
 
-  /* =========================
-     Header
-     ========================= */
-
+  /* ── Header ── */
   .header {
-    background: linear-gradient(135deg, #0d1b2a 0%, #173f3a 55%, #1b3a5c 100%);
-    color: #fffaf0;
-    border-radius: 8px;
-    padding: 14px 22px;
-    text-align: center;
+    background: linear-gradient(135deg, #0d1b2a 0%, #1b3a5c 50%, #1a5276 100%);
+    color: white; padding: 28px 60px; text-align: center;
   }
-
   .header h1 {
-    font-size: 30px;
-    line-height: 1.12;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    margin-bottom: 5px;
+    font-size: 52px; font-weight: 800; letter-spacing: 1.5px;
+    margin-bottom: 8px;
   }
-
   .header .subtitle {
-    font-size: 13px;
-    line-height: 1.3;
-    font-weight: 500;
-    color: #eaf5f0;
-    margin-bottom: 3px;
+    font-size: 26px; font-weight: 300; opacity: 0.9;
+    margin-bottom: 6px;
   }
-
   .header .meta {
-    font-size: 10.5px;
-    line-height: 1.25;
-    color: #cbd5e1;
+    font-size: 20px; opacity: 0.7; margin-top: 4px;
   }
 
-  /* =========================
-     Three equal columns
-     ========================= */
-
+  /* ── Main columns ── */
   .columns {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    overflow: hidden;
+    display: flex; flex: 1; padding: 24px 36px 18px 36px;
+    gap: 22px; min-height: 0;
   }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 18px; }
 
-  .col {
-    min-width: 0;
-    min-height: 0;
-
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-
-    overflow: hidden;
-  }
-
-  /* =========================
-     Academic blocks
-     ========================= */
-
+  /* ── Blocks ── */
   .block {
-    background: rgba(255, 255, 255, 0.94);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.035);
-    min-width: 0;
+    border: 1px solid #d5dce4; border-radius: 8px; overflow: hidden;
+    background: #fafbfc;
   }
-
   .block .block-title {
-    background: var(--navy);
-    color: #ffffff;
-    padding: 6px 10px;
-    font-size: 11.5px;
-    line-height: 1.2;
-    font-weight: 800;
-    letter-spacing: 0.02em;
+    background: #1b3a5c; color: white;
+    padding: 12px 18px; font-size: 21px; font-weight: 700;
+    letter-spacing: 0.4px;
   }
-
-  .block .block-title.teal {
-    background: var(--teal);
-  }
-
-  .block .block-title.coral {
-    background: var(--coral);
-  }
-
-  .block .block-title.navy {
-    background: var(--navy);
-  }
-
+  .block .block-title.teal  { background: #1a6e5c; }
+  .block .block-title.coral { background: #c0392b; }
+  .block .block-title.navy  { background: #1b3a5c; }
   .block .block-body {
-    padding: 7px 10px;
-    font-size: 9.8px;
-    line-height: 1.28;
+    padding: 16px 20px; font-size: 17px; line-height: 1.55;
     color: #1e293b;
   }
+  .block .block-body p { margin-bottom: 10px; }
+  .block .block-body ul { margin: 6px 0 10px 22px; }
+  .block .block-body li { margin-bottom: 4px; }
 
-  .block .block-body p {
-    margin-bottom: 4px;
-  }
-
-  .block .block-body ul,
-  .block .block-body ol {
-    margin: 3px 0 4px 14px;
-    padding-left: 6px;
-  }
-
-  .block .block-body li {
-    margin-bottom: 2px;
-  }
-
-  strong {
-    color: #111827;
-  }
-
-  em {
-    color: #334155;
-  }
-
-  /* =========================
-     Highlight / summary block
-     ========================= */
-
+  /* ── Alert (highlight) block ── */
   .alert-block {
-    border: 1px solid #efd0a6;
-    border-left: 5px solid #e67e22;
-    background: linear-gradient(135deg, #fff7e6, #ffffff);
-    border-radius: 8px;
-    padding: 7px 10px;
-    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.035);
+    border-left: 5px solid #e67e22; background: #fef9f3;
+    border-radius: 6px; padding: 16px 20px;
   }
-
   .alert-block .alert-title {
-    font-size: 11.5px;
-    line-height: 1.2;
-    font-weight: 900;
-    color: #b45309;
-    margin-bottom: 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
+    font-size: 20px; font-weight: 700; color: #c0641a; margin-bottom: 8px;
   }
+  .alert-block .alert-body { font-size: 17px; line-height: 1.55; color: #4a3724; }
+  .alert-block .alert-body ul { margin: 4px 0 0 20px; }
+  .alert-block .alert-body li { margin-bottom: 3px; }
 
-  .alert-block .alert-body {
-    font-size: 9.7px;
-    line-height: 1.28;
-    color: #4a3724;
-  }
-
-  .alert-block .alert-body ul {
-    margin: 2px 0 0 14px;
-    padding-left: 6px;
-  }
-
-  .alert-block .alert-body li {
-    margin-bottom: 2px;
-  }
-
-  /* =========================
-     Figures
-     ========================= */
-
-  figure {
-    margin: 4px 0 2px 0;
-    text-align: center;
-  }
-
-  figure img {
-    max-width: 100%;
-    max-height: 72px;
-    object-fit: contain;
-    border-radius: 4px;
-    border: 1px solid #e2e8f0;
-    background: #ffffff;
-  }
-
+  /* ── Figures ── */
+  figure { margin: 10px 0; text-align: center; }
+  figure img { max-width: 100%; border-radius: 4px; border: 1px solid #e2e8f0; }
   figure figcaption {
-    font-size: 8.4px;
-    line-height: 1.18;
-    color: #64748b;
-    margin-top: 2px;
+    font-size: 15px; color: #64748b; margin-top: 5px;
     font-style: italic;
   }
 
-  /* Special figure layout for two side-by-side images */
-  figure img[style] {
-    max-height: 78px;
-    object-fit: contain;
-  }
-
-  /* =========================
-     Tables
-     ========================= */
-
+  /* ── Tables ── */
   table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 4px 0;
-    font-size: 8.8px;
-    line-height: 1.18;
+    width: 100%; border-collapse: collapse; margin: 10px 0;
+    font-size: 16px;
   }
-
   table th {
-    background: var(--navy);
-    color: white;
-    padding: 3px 4px;
-    text-align: center;
-    font-weight: 700;
+    background: #1b3a5c; color: white; padding: 8px 10px;
+    text-align: center; font-weight: 600;
   }
-
   table td {
-    padding: 3px 4px;
-    text-align: center;
+    padding: 7px 10px; text-align: center;
     border-bottom: 1px solid #e2e8f0;
-    vertical-align: middle;
   }
+  table tr:nth-child(even) { background: #f1f5f9; }
+  table tr:last-child { font-weight: 700; }
 
-  table tr:nth-child(even) {
-    background: #f1f5f9;
-  }
-
-  table tr:last-child {
-    font-weight: 700;
-  }
-
-  /* =========================
-     Key-value grid
-     ========================= */
-
-  .kv-grid {
-    display: grid;
-    grid-template-columns: 0.55fr 2.45fr;
-    gap: 2px 6px;
-    font-size: 9.4px;
-    line-height: 1.25;
-    margin: 4px 0;
-  }
-
-  .kv-grid .kv {
-    font-weight: 800;
-    color: var(--navy);
-  }
-
-  /* =========================
-     Math and tags
-     ========================= */
-
+  /* ── Inline math ── */
   .math {
-    font-family: "Latin Modern Math", "Cambria Math", "DejaVu Serif", serif;
+    font-family: 'Latin Modern Math', 'Cambria Math', 'DejaVu Serif', serif;
     font-style: italic;
   }
 
-  mjx-container {
-    max-width: 100%;
-    overflow-x: hidden;
+  /* ── Key-value list ── */
+  .kv-grid {
+    display: grid; grid-template-columns: 1fr 2fr; gap: 4px 10px;
+    font-size: 16px; margin: 8px 0;
   }
+  .kv-grid .kv { font-weight: 600; color: #1b3a5c; }
 
-  mjx-container[display="true"] {
-    margin: 0.25em 0 !important;
-    font-size: 82% !important;
-  }
-
-  .tag {
-    display: inline-block;
-    background: #e8f0fe;
-    color: #1a56a0;
-    padding: 1px 6px;
-    border-radius: 10px;
-    font-size: 8.5px;
-    line-height: 1.2;
-    font-weight: 700;
-    margin: 0 2px 1px 0;
-  }
-
-  /* =========================
-     Footer
-     ========================= */
-
+  /* ── Footer ── */
   .footer {
-    background: #0d1b2a;
-    color: #cbd5e1;
-    border-radius: 7px;
-    padding: 7px 14px;
-    font-size: 8.8px;
-    line-height: 1.35;
-    text-align: center;
+    background: #0d1b2a; color: #94a3b8;
+    padding: 14px 48px; font-size: 15px; text-align: center;
+  }
+  .footer code { color: #f0c060; }
+
+  /* ── Tag chips ── */
+  .tag {
+    display: inline-block; background: #e8f0fe; color: #1a56a0;
+    padding: 2px 10px; border-radius: 12px; font-size: 14px;
+    font-weight: 600; margin: 1px 3px;
   }
 
-  .footer strong {
-    color: #ffffff;
+  /* ── Responsive scaling for screen ── */
+  @media screen and (max-width: 1600px) {
+    .poster { width: 100%; }
+    .header h1 { font-size: 36px; }
+    .header .subtitle { font-size: 20px; }
+    .block .block-title { font-size: 17px; padding: 9px 14px; }
+    .block .block-body { font-size: 14px; padding: 12px 16px; }
+    table { font-size: 13px; }
   }
-
-  .footer code {
-    color: #f0c060;
-    font-size: 8.6px;
-  }
-
-  /* =========================
-     Print safety
-     ========================= */
-
-  @media print {
-    html,
-    body {
-      width: 36in;
-      height: 24in;
-      margin: 0;
-      padding: 0;
-      background: white;
-      overflow: hidden;
-    }
-
-    body {
-      display: block;
-    }
-
-    .poster {
-      width: 36in;
-      height: 24in;
-      max-width: none;
-      aspect-ratio: auto;
-
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-
-      padding: 0.42in;
-      gap: 0.22in;
-
-      overflow: hidden;
-
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-
-    .columns {
-      gap: 0.22in;
-    }
-
-    .col {
-      gap: 0.13in;
-    }
-
-    .header {
-      padding: 0.22in 0.35in;
-    }
-
-    .header h1 {
-      font-size: 34px;
-    }
-
-    .header .subtitle {
-      font-size: 15px;
-    }
-
-    .header .meta {
-      font-size: 12px;
-    }
-
-    .block .block-title {
-      font-size: 12.5px;
-      padding: 7px 11px;
-    }
-
-    .block .block-body {
-      font-size: 10.3px;
-      padding: 8px 11px;
-    }
-
-    .alert-block .alert-title {
-      font-size: 12px;
-    }
-
-    .alert-block .alert-body {
-      font-size: 10px;
-    }
-
-    table {
-      font-size: 9.1px;
-    }
-
-    figure img {
-      max-height: 0.95in;
-    }
-
-    figure figcaption {
-      font-size: 8.5px;
-    }
-
-    .footer {
-      font-size: 9.2px;
-      padding: 0.12in 0.25in;
-    }
-  }
-
-  /* =========================
-     Small screen preview
-     ========================= */
-
-  @media screen and (max-width: 900px) {
-    body {
-      padding: 10px;
-    }
-
-    .poster {
-      width: 100%;
-      height: auto;
-      aspect-ratio: auto;
-      overflow: visible;
-      padding: 12px;
-    }
-
-    .columns {
-      grid-template-columns: 1fr;
-      overflow: visible;
-    }
-
-    .col {
-      overflow: visible;
-    }
-
-    .header h1 {
-      font-size: 24px;
-    }
-
-    .header .subtitle {
-      font-size: 13px;
-    }
-
-    .block .block-title {
-      font-size: 13px;
-    }
-
-    .block .block-body {
-      font-size: 11.5px;
-    }
-
-    table {
-      font-size: 10px;
-    }
-
-    figure img {
-      max-height: 140px;
-    }
-  }
-  .compact-pipeline {
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 6px;
-  padding: 6px 8px;
-  text-align: center;
-  font-size: 9.5px;
-  line-height: 1.35;
-  margin: 4px 0 6px 0;
-  color: #1e293b;
-}
-
-.compact-pipeline span {
-  color: #1b3a5c;
-  font-weight: 800;
-}
-
-.compact-pipeline .green {
-  color: #1a6e5c;
-}
-
-.compact-pipeline .red {
-  color: #c0392b;
-}
-
-.arch-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 5px;
-  margin: 4px 0 6px 0;
-}
-
-.arch-grid div {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-left: 3px solid #1b3a5c;
-  border-radius: 5px;
-  padding: 5px 6px;
-  font-size: 8.7px;
-  line-height: 1.25;
-  color: #334155;
-}
-
-.arch-grid b {
-  color: #173f3a;
-  font-size: 9.2px;
-}
 </style>
 
 <!-- MathJax for LaTeX rendering -->
@@ -650,6 +212,12 @@ window.MathJax = {
           <p><strong>Theorem 1 (Equivalent Distortion):</strong> The unobservable semantic distortion can be transformed into an observable form:</p>
           $$\hat d_s(x, \hat s) = \frac{1}{p(x)}\sum_s p(s, x)\, d_s(s, \hat s) = \mathbb{E}[d_s(S, \hat s) \mid X = x]$$
 
+          <p><strong>Key Properties (Proposition 1):</strong></p>
+          <ul>
+            <li><span class="tag">Monotonicity</span> $R(D_s, D_a)$ decreases as $D_s$ or $D_a$ increase</li>
+            <li><span class="tag">Convexity</span> $R(D_s, D_a)$ is jointly convex in $(D_s, D_a)$</li>
+            <li><span class="tag">Boundary</span> $R = 0$ when constraints are loose enough</li>
+          </ul>
         </div>
       </div>
 
@@ -714,8 +282,18 @@ window.MathJax = {
         <div class="block-body">
           <p>For $(S, X)$ jointly Gaussian (scalar), squared-error distortions:</p>
           $$R(D_s, D_a) = \frac{1}{2}\max\!\left\{ \left[\log\frac{\Sigma_X}{D_a}\right]^+,\; \left[\log\frac{\Sigma_{SX}^2}{\Sigma_X(D_s - \text{mmse})}\right]^+ \right\}$$
+
+          <p>where $\text{mmse} = \mathbb{E}[(S - \mathbb{E}[S|X])^2]$ is the irreducible estimation error.</p>
+
+          <p><strong>Two regimes:</strong></p>
+          <ul>
+            <li><strong>Appearance-dominated:</strong> $\frac{D_a}{\Sigma_X} < \frac{D_s - \text{mmse}}{\Sigma_{SX}^2/\Sigma_X}$ &rarr; rate set by appearance</li>
+            <li><strong>Semantic-dominated:</strong> the opposite &rarr; rate set by semantic requirement</li>
+          </ul>
+
           <figure>
             <img src="figures/scalar_sordf_contour.png" alt="Scalar Gaussian contour">
+            <figcaption>Rate contours in $(D_s, D_a)$ plane. Rate = max of two competing constraints.</figcaption>
           </figure>
         </div>
       </div>
@@ -725,9 +303,22 @@ window.MathJax = {
         <div class="block-title navy">6. Vector Gaussian: Five-Region Structure (Prop. 4)</div>
         <div class="block-body">
           <p><strong>Model:</strong> $X = \mathbf{1}_m S + Z$, where $S \sim \mathcal{N}(0, \sigma_S^2)$, $Z \sim \mathcal{N}(0, \sigma_Z^2 I_m)$.</p>
+
+          <p>Apply orthogonal transform to diagonalize: $m$ independent Gaussian channels, only <em>one</em> carries semantic information. The distortion-allocation problem yields <strong>five distinct regions</strong>:</p>
+
+          <table>
+            <tr><th>Region</th><th>Condition</th><th>Physical Meaning</th></tr>
+            <tr><td>S1: Zero-rate</td><td>Both constraints loose</td><td>No encoding needed</td></tr>
+            <tr><td>S2: Appearance-driven</td><td>Appearance constraint tight</td><td>All $m$ channels encoded</td></tr>
+            <tr><td>S3: Semantic-driven</td><td>Semantic constraint tight</td><td>Only semantic channel encoded</td></tr>
+            <tr><td>S4: Mixed boundary</td><td>Boundary interaction</td><td>One constraint dominates at margin</td></tr>
+            <tr><td><strong>S5: TRADEOFF</strong></td><td>Genuine competition</td><td>Rate must be split across both goals</td></tr>
+          </table>
+
           <figure>
             <img src="figures/figure2.png" alt="Five regions" style="max-width:48%;">
             <img src="figures/gaussian_vector_sordf_m2_contour.png" alt="Vector contour" style="max-width:48%;">
+            <figcaption>Left: Five-region diagram (m=3). Right: Rate contour (m=2). Slanted boundaries mark the TRADEOFF region.</figcaption>
           </figure>
         </div>
       </div>
@@ -752,43 +343,61 @@ window.MathJax = {
         </div>
       </div>
 
-      <!-- RDPC Architecture - Compact Version -->
-      <div class="block">
-        <div class="block-title coral">8. RDPC on MNIST: Deep Architecture</div>
-        <div class="block-body">
-
-          <p><strong>End-to-End Pipeline:</strong></p>
-
-          <div class="compact-pipeline">
-            $S$ label → $X$ image → <span>Encoder</span> → $Z$ →
-            <span>Decoder</span> → $\hat X$ →
-            <span class="green">Classifier</span> → $\hat S$
-            <br>
-            <span class="red">Discriminator / WGAN-GP</span> regularizes $\hat X$ for perceptual realism.
-          </div>
-
-          <p><strong>Modules:</strong></p>
-
-          <div class="arch-grid">
-            <div><b>Encoder</b><br>Conv 32→64→128 + FC<br>$Z \in \mathbb{R}^k$</div>
-            <div><b>Decoder</b><br>FC + ConvT 128→64→32→1<br>$\hat X \in [0,1]^{28\times28}$</div>
-            <div><b>Critic</b><br>Conv 32→64→128 + FC<br>WGAN-GP score</div>
-            <div><b>Classifier</b><br>Conv + Pool + FC→10<br>Frozen logits</div>
-          </div>
-
-          <p>
-            <strong>Rate proxy:</strong>
-            $R \approx \frac{1}{2}\sum_{i=1}^{k}\log_2(1+\sigma_i^2)$
-            Smaller bottleneck dimension $k$ gives stronger compression.
-          </p>
-
-        </div>
-      </div>
-
     </div><!-- /col2 -->
 
     <!-- ──────── COLUMN 3 ──────── -->
     <div class="col">
+
+      <!-- RDPC Architecture -->
+      <div class="block">
+        <div class="block-title coral">8. RDPC on MNIST: Deep Architecture</div>
+        <div class="block-body">
+          <p><strong>System Pipeline:</strong></p>
+          <p style="text-align:center; font-size:15px; line-height:1.7;">
+            $S$ (label) &rarr; $X$ (28&times;28) &rarr;
+            <strong style="color:#1b3a5c;">Encoder</strong> &rarr;
+            $Z \in \mathbb{R}^k$ &rarr;
+            <strong style="color:#1b3a5c;">Decoder</strong> &rarr;
+            $\hat X$ &rarr;
+            <strong style="color:#1a6e5c;">Classifier</strong> &rarr;
+            $\hat S$
+            <br>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            $\uparrow$
+            <br>
+            &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+            <strong style="color:#c0392b;">Discriminator (WGAN-GP)</strong>
+          </p>
+
+          <table>
+            <tr><th>Network</th><th>Architecture</th><th>Output</th></tr>
+            <tr>
+              <td><strong>Encoder</strong></td>
+              <td>Conv 32→64→128 + FC</td>
+              <td>$Z \in \mathbb{R}^k$</td>
+            </tr>
+            <tr>
+              <td><strong>Decoder</strong></td>
+              <td>FC + ConvT 128→64→32→1</td>
+              <td>$\hat X \in [0,1]^{28\times28}$</td>
+            </tr>
+            <tr>
+              <td><strong>Discriminator</strong></td>
+              <td>Conv 32→64→128 + FC→1 (no sigmoid)</td>
+              <td>Scalar critic score</td>
+            </tr>
+            <tr>
+              <td><strong>Classifier</strong></td>
+              <td>Conv 32→64→128 + Pool + FC→10</td>
+              <td>10-class logits (frozen)</td>
+            </tr>
+          </table>
+
+          <p><strong>Rate Estimation:</strong> Since $I(X; Z)$ is intractable for continuous $Z$, we use the <em>Gaussian entropy upper bound</em>:</p>
+          $$R \approx \frac{1}{2}\sum_{i=1}^{k} \log_2(1 + \sigma_i^2)$$
+          <p>The bottleneck dimension $k$ implicitly controls the rate &mdash; smaller $k$ = stronger compression.</p>
+        </div>
+      </div>
 
       <!-- Training Strategy -->
       <div class="block">
@@ -818,6 +427,7 @@ window.MathJax = {
           <p><strong>Classifier Pretraining:</strong> 5 epochs on real MNIST &rarr; 96.55% test accuracy, then frozen.</p>
         </div>
       </div>
+
       <!-- Results -->
       <div class="block">
         <div class="block-title coral">10. RDPC Experimental Results (k=8)</div>
@@ -850,6 +460,21 @@ window.MathJax = {
             <li><strong>Extension (RDPC):</strong> Degenerated Hamming distortion to cross-entropy, added WGAN-GP perception constraint, and implemented joint Distortion-Perception-Classification compression on MNIST.</li>
             <li><strong>Connection:</strong> Demonstrated that when $\lambda_p = 0$, RDPC reduces to Variational Information Bottleneck (VIB) — bridging classical rate-distortion theory with modern deep learning.</li>
           </ul>
+        </div>
+      </div>
+
+      <!-- Hyperparameter Guide -->
+      <div class="block">
+        <div class="block-title navy">Hyperparameter Tuning Guide</div>
+        <div class="block-body">
+          <table>
+            <tr><th>Goal</th><th>Adjustment</th></tr>
+            <tr><td>Lower rate (stronger compression)</td><td>Decrease bottleneck $k$</td></tr>
+            <tr><td>Better reconstruction</td><td>Increase $\lambda_d$ or $k$</td></tr>
+            <tr><td>More realistic images</td><td>Increase $\lambda_p$</td></tr>
+            <tr><td>Higher classification accuracy</td><td>Increase $\lambda_c$</td></tr>
+            <tr><td>More stable training</td><td>Increase GP weight, decrease $lr_d$</td></tr>
+          </table>
         </div>
       </div>
 
