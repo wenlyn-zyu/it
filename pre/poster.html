@@ -1,61 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Poster - Semantic Rate-Distortion</title>
-    
-    <!-- 引入 MathJax 库，自动将 $ 符号解析并渲染为美观的数学公式 -->
-    <script>
-      window.MathJax = {
-        tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']],
-          displayMath: [['$$', '$$'], ['\\[', '\\]']]
-        },
-        svg: {
-          fontCache: 'global'
-        }
-      };
-    </script>
-    <script type="text/javascript" id="MathJax-script" async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semantic Rate-Distortion: From Theory to Deep Learning</title>
+<style>
+  /* =========================
+     3:2 Academic Poster Layout
+     Print size: 36in × 24in
+     ========================= */
 
-    <style>
-        :root {
-        --ink: #111827;
-        --muted: #4b5563;
-        --paper: #fffdf8;
-        --wash: #f5f8f6;
-        --line: #d6ded8;
-        --deep: #173f3a;
-        --green: #2f6f63;
-        --red: #c65045;
-        --gold: #d39b3d;
-        --blue: #355f93;
-        --soft-blue: #e9f0f8;
-        --soft-gold: #fff7e6;
-    }
+  @page {
+    size: 36in 24in;
+    margin: 0;
+  }
 
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
+  :root {
+    --ink: #111827;
+    --muted: #4b5563;
+    --paper: #fffdf8;
+    --wash: #f5f8f6;
+    --line: #d6ded8;
 
-    body {
-        min-height: 100vh;
-        padding: 28px;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        background: #dfe5e3;
-        color: var(--ink);
-        font-family: "Inter", "Segoe UI", Arial, sans-serif;
-    }
+    --deep: #173f3a;
+    --navy: #1b3a5c;
+    --teal: #1a6e5c;
+    --coral: #c0392b;
+    --gold: #d39b3d;
 
-    /* 3:2 landscape academic poster */
-    .poster {
+    --soft-blue: #eef4fb;
+    --soft-gold: #fff7e6;
+    --soft-red: #fff1ef;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    width: 100%;
+    min-height: 100%;
+  }
+
+  body {
+    font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: #dfe5e3;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 24px;
+  }
+
+  /* =========================
+     Poster: strict 3:2 ratio
+     ========================= */
+
+  .poster {
         width: min(1440px, calc(100vw - 56px));
         aspect-ratio: 3 / 2;
         background:
@@ -73,532 +77,789 @@
         overflow: hidden;
     }
 
-    /* Smaller academic title bar */
-    header {
-        background: var(--deep);
-        color: #fffaf0;
-        border-radius: 10px;
-        padding: 18px 28px 16px;
-        text-align: left;
-        border-bottom: none;
-        margin-bottom: 0;
-        position: relative;
-        overflow: hidden;
+  /* =========================
+     Header
+     ========================= */
+
+  .header {
+    background: linear-gradient(135deg, #0d1b2a 0%, #173f3a 55%, #1b3a5c 100%);
+    color: #fffaf0;
+    border-radius: 8px;
+    padding: 14px 22px;
+    text-align: center;
+  }
+
+  .header h1 {
+    font-size: 30px;
+    line-height: 1.12;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    margin-bottom: 5px;
+  }
+
+  .header .subtitle {
+    font-size: 13px;
+    line-height: 1.3;
+    font-weight: 500;
+    color: #eaf5f0;
+    margin-bottom: 3px;
+  }
+
+  .header .meta {
+    font-size: 10.5px;
+    line-height: 1.25;
+    color: #cbd5e1;
+  }
+
+  /* =========================
+     Three equal columns
+     ========================= */
+
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .col {
+    min-width: 0;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    overflow: hidden;
+  }
+
+  /* =========================
+     Academic blocks
+     ========================= */
+
+  .block {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.035);
+    min-width: 0;
+  }
+
+  .block .block-title {
+    background: var(--navy);
+    color: #ffffff;
+    padding: 6px 10px;
+    font-size: 11.5px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  .block .block-title.teal {
+    background: var(--teal);
+  }
+
+  .block .block-title.coral {
+    background: var(--coral);
+  }
+
+  .block .block-title.navy {
+    background: var(--navy);
+  }
+
+  .block .block-body {
+    padding: 7px 10px;
+    font-size: 9.8px;
+    line-height: 1.28;
+    color: #1e293b;
+  }
+
+  .block .block-body p {
+    margin-bottom: 4px;
+  }
+
+  .block .block-body ul,
+  .block .block-body ol {
+    margin: 3px 0 4px 14px;
+    padding-left: 6px;
+  }
+
+  .block .block-body li {
+    margin-bottom: 2px;
+  }
+
+  strong {
+    color: #111827;
+  }
+
+  em {
+    color: #334155;
+  }
+
+  /* =========================
+     Highlight / summary block
+     ========================= */
+
+  .alert-block {
+    border: 1px solid #efd0a6;
+    border-left: 5px solid #e67e22;
+    background: linear-gradient(135deg, #fff7e6, #ffffff);
+    border-radius: 8px;
+    padding: 7px 10px;
+    box-shadow: 0 4px 12px rgba(17, 24, 39, 0.035);
+  }
+
+  .alert-block .alert-title {
+    font-size: 11.5px;
+    line-height: 1.2;
+    font-weight: 900;
+    color: #b45309;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .alert-block .alert-body {
+    font-size: 9.7px;
+    line-height: 1.28;
+    color: #4a3724;
+  }
+
+  .alert-block .alert-body ul {
+    margin: 2px 0 0 14px;
+    padding-left: 6px;
+  }
+
+  .alert-block .alert-body li {
+    margin-bottom: 2px;
+  }
+
+  /* =========================
+     Figures
+     ========================= */
+
+  figure {
+    margin: 4px 0 2px 0;
+    text-align: center;
+  }
+
+  figure img {
+    max-width: 100%;
+    max-height: 72px;
+    object-fit: contain;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+  }
+
+  figure figcaption {
+    font-size: 8.4px;
+    line-height: 1.18;
+    color: #64748b;
+    margin-top: 2px;
+    font-style: italic;
+  }
+
+  /* Special figure layout for two side-by-side images */
+  figure img[style] {
+    max-height: 78px;
+    object-fit: contain;
+  }
+
+  /* =========================
+     Tables
+     ========================= */
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 4px 0;
+    font-size: 8.8px;
+    line-height: 1.18;
+  }
+
+  table th {
+    background: var(--navy);
+    color: white;
+    padding: 3px 4px;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  table td {
+    padding: 3px 4px;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+  }
+
+  table tr:nth-child(even) {
+    background: #f1f5f9;
+  }
+
+  table tr:last-child {
+    font-weight: 700;
+  }
+
+  /* =========================
+     Key-value grid
+     ========================= */
+
+  .kv-grid {
+    display: grid;
+    grid-template-columns: 0.55fr 2.45fr;
+    gap: 2px 6px;
+    font-size: 9.4px;
+    line-height: 1.25;
+    margin: 4px 0;
+  }
+
+  .kv-grid .kv {
+    font-weight: 800;
+    color: var(--navy);
+  }
+
+  /* =========================
+     Math and tags
+     ========================= */
+
+  .math {
+    font-family: "Latin Modern Math", "Cambria Math", "DejaVu Serif", serif;
+    font-style: italic;
+  }
+
+  mjx-container {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  mjx-container[display="true"] {
+    margin: 0.25em 0 !important;
+    font-size: 82% !important;
+  }
+
+  .tag {
+    display: inline-block;
+    background: #e8f0fe;
+    color: #1a56a0;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 8.5px;
+    line-height: 1.2;
+    font-weight: 700;
+    margin: 0 2px 1px 0;
+  }
+
+  /* =========================
+     Footer
+     ========================= */
+
+  .footer {
+    background: #0d1b2a;
+    color: #cbd5e1;
+    border-radius: 7px;
+    padding: 7px 14px;
+    font-size: 8.8px;
+    line-height: 1.35;
+    text-align: center;
+  }
+
+  .footer strong {
+    color: #ffffff;
+  }
+
+  .footer code {
+    color: #f0c060;
+    font-size: 8.6px;
+  }
+
+  /* =========================
+     Print safety
+     ========================= */
+
+  @media print {
+    html,
+    body {
+      width: 36in;
+      height: 24in;
+      margin: 0;
+      padding: 0;
+      background: white;
+      overflow: hidden;
     }
 
-    header::after {
-        content: "";
-        position: absolute;
-        right: -95px;
-        bottom: -130px;
-        width: 300px;
-        height: 300px;
-        border-radius: 50%;
-        border: 34px solid rgba(211,155,61,0.24);
+    body {
+      display: block;
     }
 
-    header h1 {
-        position: relative;
-        z-index: 1;
-        color: #fffaf0;
-        font-size: 36px;
-        line-height: 1.05;
-        font-weight: 900;
-        letter-spacing: -0.03em;
-        margin-bottom: 8px;
+    .poster {
+      width: 36in;
+      height: 24in;
+      max-width: none;
+      aspect-ratio: auto;
+
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+
+      padding: 0.42in;
+      gap: 0.22in;
+
+      overflow: hidden;
+
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
-    header h2 {
-        position: relative;
-        z-index: 1;
-        color: #dcebe7;
-        font-size: 16px;
-        line-height: 1.35;
-        font-weight: 500;
-        margin-bottom: 10px;
+    .columns {
+      gap: 0.22in;
     }
 
-    .meta-info {
-        position: relative;
-        z-index: 1;
-        color: #eaf5f0;
-        font-size: 12px;
-        line-height: 1.45;
-        font-weight: 500;
+    .col {
+      gap: 0.13in;
     }
 
-    .meta-info span {
-        margin: 0 10px;
+    .header {
+      padding: 0.22in 0.35in;
     }
 
-    .meta-info span:first-child {
-        margin-left: 0;
+    .header h1 {
+      font-size: 34px;
     }
 
-    /* 3-column academic layout */
-    .grid-layout {
-        display: grid;
-        grid-template-columns: 1fr 1.08fr 1fr;
-        gap: 18px;
-        width: 100%;
-        min-height: 0;
+    .header .subtitle {
+      font-size: 15px;
     }
 
-    .column {
-        min-width: 0;
-        display: grid;
-        align-content: start;
-        gap: 14px;
+    .header .meta {
+      font-size: 12px;
     }
 
-    /* Card panels */
-    .card {
-        background: rgba(255,255,255,0.88);
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 15px 17px;
-        margin-bottom: 0;
-        box-shadow: 0 8px 22px rgba(17,24,39,0.055);
+    .block .block-title {
+      font-size: 12.5px;
+      padding: 7px 11px;
     }
 
-    .card h3 {
-        color: var(--deep);
-        font-size: 15px;
-        line-height: 1.15;
-        font-weight: 850;
-        border-bottom: 2px solid var(--gold);
-        padding-bottom: 6px;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+    .block .block-body {
+      font-size: 10.3px;
+      padding: 8px 11px;
     }
 
-    .card p {
-        color: var(--muted);
-        font-size: 12.2px;
-        line-height: 1.42;
-        margin-bottom: 8px;
+    .alert-block .alert-title {
+      font-size: 12px;
     }
 
-    .card ul {
-        color: var(--muted);
-        font-size: 12.2px;
-        line-height: 1.42;
-        padding-left: 18px;
-        margin-bottom: 8px;
+    .alert-block .alert-body {
+      font-size: 10px;
     }
 
-    .card li {
-        margin-bottom: 4px;
+    table {
+      font-size: 9.1px;
     }
 
-    /* Math blocks */
-    .math-container {
-        background: var(--soft-gold);
-        border: 1px solid #ecd09a;
-        border-left: 5px solid var(--gold);
-        border-radius: 7px;
-        padding: 10px 12px;
-        margin: 10px 0;
-        text-align: center;
-        font-size: 12px;
-        overflow: hidden;
+    figure img {
+      max-height: 0.95in;
     }
 
-    /* Flow diagram */
-    .flow-diagram {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 5px;
-        margin: 12px 0;
-        padding: 10px 8px;
-        background: #f6f8f4;
-        border: 1px dashed #bac9c1;
-        border-radius: 8px;
-        width: 100%;
+    figure figcaption {
+      font-size: 8.5px;
     }
 
-    .node {
-        padding: 6px 8px;
-        border-radius: 7px;
-        font-size: 10.5px;
-        font-weight: 850;
-        text-align: center;
-        line-height: 1.18;
-        flex-shrink: 0;
+    .footer {
+      font-size: 9.2px;
+      padding: 0.12in 0.25in;
+    }
+  }
+
+  /* =========================
+     Small screen preview
+     ========================= */
+
+  @media screen and (max-width: 900px) {
+    body {
+      padding: 10px;
     }
 
-    .node-s {
-        background: var(--red);
-        color: #fff;
-        border: 1px solid rgba(198,80,69,0.4);
+    .poster {
+      width: 100%;
+      height: auto;
+      aspect-ratio: auto;
+      overflow: visible;
+      padding: 12px;
     }
 
-    .node-x {
-        background: var(--blue);
-        color: #fff;
-        border: 1px solid rgba(53,95,147,0.4);
+    .columns {
+      grid-template-columns: 1fr;
+      overflow: visible;
     }
 
-    .node-enc {
-        background: var(--green);
-        color: #fff;
-        border: 1px solid rgba(47,111,99,0.4);
+    .col {
+      overflow: visible;
     }
 
-    .node-dec {
-        background: var(--gold);
-        color: #1f2937;
-        border: 1px solid rgba(211,155,61,0.4);
+    .header h1 {
+      font-size: 24px;
     }
 
-    .arrow {
-        color: var(--deep);
-        font-weight: 900;
-        font-size: 13px;
-        flex-shrink: 0;
+    .header .subtitle {
+      font-size: 13px;
     }
 
-    /* Figure placeholders styled as academic figures */
-    .img-placeholder {
-        border: 1px solid #dde4df;
-        background:
-            linear-gradient(180deg, transparent 0 24%, rgba(23,63,58,0.055) 24% 25%, transparent 25% 49%, rgba(23,63,58,0.055) 49% 50%, transparent 50% 74%, rgba(23,63,58,0.055) 74% 75%, transparent 75%),
-            linear-gradient(90deg, transparent 0 24%, rgba(23,63,58,0.055) 24% 25%, transparent 25% 49%, rgba(23,63,58,0.055) 49% 50%, transparent 50% 74%, rgba(23,63,58,0.055) 74% 75%, transparent 75%),
-            #ffffff;
-        border-radius: 8px;
-        min-height: 118px;
-        margin: 10px 0;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-        text-align: center;
-        position: relative;
+    .block .block-title {
+      font-size: 13px;
     }
 
-    .img-placeholder::before {
-        content: "";
-        position: absolute;
-        left: 22px;
-        bottom: 20px;
-        width: 72%;
-        height: 56%;
-        border-left: 2px solid rgba(23,63,58,0.45);
-        border-bottom: 2px solid rgba(23,63,58,0.45);
+    .block .block-body {
+      font-size: 11.5px;
     }
 
-    .img-placeholder::after {
-        content: "";
-        position: absolute;
-        left: 42px;
-        bottom: 36px;
-        width: 48%;
-        height: 34%;
-        border-radius: 50%;
-        border-top: 4px solid rgba(198,80,69,0.85);
-        border-right: 4px solid transparent;
-        transform: rotate(-10deg);
+    table {
+      font-size: 10px;
     }
 
-    .img-placeholder .fig-title {
-        position: relative;
-        z-index: 1;
-        background: rgba(255,255,255,0.86);
-        color: var(--deep);
-        border: 1px solid rgba(23,63,58,0.12);
-        border-radius: 6px;
-        padding: 5px 8px;
-        font-weight: 800;
-        font-size: 11.5px;
-        margin-bottom: 5px;
+    figure img {
+      max-height: 140px;
     }
+  }
+  .compact-pipeline {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  text-align: center;
+  font-size: 9.5px;
+  line-height: 1.35;
+  margin: 4px 0 6px 0;
+  color: #1e293b;
+}
 
-    .img-placeholder .fig-desc {
-        position: relative;
-        z-index: 1;
-        max-width: 90%;
-        background: rgba(255,255,255,0.82);
-        color: #55615c;
-        border-radius: 5px;
-        padding: 4px 6px;
-        font-size: 10.5px;
-        line-height: 1.3;
-    }
+.compact-pipeline span {
+  color: #1b3a5c;
+  font-weight: 800;
+}
 
-    /* Make paired figures compact */
-    .card .img-placeholder + .img-placeholder {
-        margin-top: 8px;
-    }
+.compact-pipeline .green {
+  color: #1a6e5c;
+}
 
-    /* Slightly reduce figure height in dense sections */
-    .column:nth-child(2) .img-placeholder {
-        min-height: 105px;
-    }
+.compact-pipeline .red {
+  color: #c0392b;
+}
 
-    .column:nth-child(3) .img-placeholder {
-        min-height: 110px;
-    }
+.arch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  margin: 4px 0 6px 0;
+}
 
-    /* Footer */
-    footer {
-        margin-top: 0;
-        border-top: 1px solid rgba(23,63,58,0.24);
-        padding-top: 10px;
-        color: #64706c;
-        font-size: 10.5px;
-        line-height: 1.35;
-        text-align: center;
-    }
+.arch-grid div {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #1b3a5c;
+  border-radius: 5px;
+  padding: 5px 6px;
+  font-size: 8.7px;
+  line-height: 1.25;
+  color: #334155;
+}
 
-    /* MathJax spacing control */
-    mjx-container {
-        max-width: 100%;
-        overflow-x: hidden;
-    }
+.arch-grid b {
+  color: #173f3a;
+  font-size: 9.2px;
+}
+</style>
 
-    .math-container mjx-container {
-        font-size: 92% !important;
-    }
-
-    /* Print version */
-    @media print {
-        @page {
-            size: 36in 24in;
-            margin: 0;
-        }
-
-        body {
-            padding: 0;
-            background: #fff;
-        }
-
-        .poster {
-            width: 100vw;
-            height: 100vh;
-            box-shadow: none;
-            border: none;
-            border-radius: 0;
-        }
-    }
-
-    /* Responsive fallback */
-    @media (max-width: 900px) {
-        body {
-            padding: 14px;
-        }
-
-        .poster {
-            width: 100%;
-            height: auto;
-            aspect-ratio: auto;
-            overflow: visible;
-            padding: 18px;
-        }
-
-        .grid-layout {
-            grid-template-columns: 1fr;
-        }
-
-        header h1 {
-            font-size: 30px;
-        }
-
-        header h2 {
-            font-size: 15px;
-        }
-
-        .meta-info span {
-            display: block;
-            margin: 3px 0;
-        }
-    }
-    </style>
+<!-- MathJax for LaTeX rendering -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true,
+  },
+  svg: { fontCache: 'global' },
+};
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
 
 <div class="poster">
-    <!-- Header -->
-    <header>
-        <h1>A Rate-Distortion Framework for Characterizing Semantic Information</h1>
-        
-        <div class="meta-info">
-            <span><strong>Presenter:</strong> [Your Name]</span> | 
-            <span><strong>Baseline:</strong> Liu et al., IEEE 2021</span> | 
-            <span><strong>Environment:</strong> PyTorch / MNIST</span>
-        </div>
-    </header>
 
-    <!-- Main columns -->
-    <div class="grid-layout">
-        
-        <!-- Column 1: Background, Formulation & Proof -->
-        <div class="column">
-            <!-- Box 1: Shortened Motivation -->
-            <div class="card">
-                <h3>1. Background & Motivation</h3>
-                <p><strong>The Gap:</strong> Shannon's theory excludes semantics, focusing purely on reconstructing bits. Traditional compression often leads to blurry images under low bitrates.</p>
-                <p><strong>The Concept:</strong> Semantic aspects correspond to achieving inference goals. By splitting a source into an <em>unobservable intrinsic state $S$</em> and an <em>observable appearance $X$</em>, we can jointly optimize reconstruction and inference.</p>
-            </div>
-
-            <!-- Box 2: Problem Modeling -->
-            <div class="card">
-                <h3>2. Problem Modeling</h3>
-                <p>We model the memoryless source as $(S, X) \sim p(s,x)$. The encoder only observes $X$, while the decoder reconstructs both $S$ and $X$.</p>
-                
-                <!-- HTML Process Flow Diagram (已针对宽度溢出精细调优内联样式) -->
-                <div class="flow-diagram">
-                    <div class="node node-s">S<br>(Intrinsic)</div>
-                    <div class="arrow">→</div>
-                    <div class="node node-x">X<br>(Extrinsic)</div>
-                    <div class="arrow">→</div>
-                    <div class="node node-enc">Encoder<br>R bits</div>
-                    <div class="arrow">→</div>
-                    <div class="node node-dec">Decoder</div>
-                    <div class="arrow">→</div>
-                    <!-- 将最右侧一列的字体稍微调小，并设置 flex-shrink 彻底解决向右凸出的问题 -->
-                    <div style="display: flex; flex-direction: column; gap: 4px; flex-shrink: 0;">
-                        <span class="node node-x" style="padding: 3px 6px; font-size: 9px; white-space: nowrap;">$\hat{X}$ (Reconstruction)</span>
-                        <span class="node node-s" style="padding: 3px 6px; font-size: 9px; white-space: nowrap;">$\hat{S}$ (Inference)</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Box 3: Concised Proof Methodology -->
-            <div class="card">
-                <h3>3. Solution Methodology & Proof</h3>
-                <p><strong>Theorem 1</strong> characterizes the State-Observation Rate-Distortion Function (SORDF) [2021]:</p>
-                
-                <div class="math-container">
-                    $$R(D_s, D_a) = \min_{p(\hat{s}, \hat{x}|x)} I(X; \hat{S}, \hat{X})$$
-                    $$\text{s.t. } \mathbb{E}[\hat{d}_s(X, \hat{S})] \le D_s, \quad \mathbb{E}[d_a(X, \hat{X})] \le D_a$$
-                </div>
-
-                <p><strong>Proof Methodology:</strong></p>
-                <ul>
-                    <li><strong>One-shot Equivalence:</strong> Prove $\mathbb{E}[d_s(S, \hat{S})] = \mathbb{E}[\hat{d}_s(X, \hat{S})]$ by exploiting the Markov chain $S \leftrightarrow X \leftrightarrow \hat{S}$ [10].</li>
-                    <li><strong>Tensorization:</strong> Extend the equivalence to multi-letter blocks using i.i.d. source properties.</li>
-                    <li><strong>Reduction:</strong> Convert the indirect problem into a standard lossy coding problem under dual constraints.</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Column 2: Original Case Studies -->
-        <div class="column">
-            <!-- Box 4: Original Case Studies -->
-            <div class="card">
-                <h3>4. Original Case Studies</h3>
-                
-                <p><strong>Case 1: Jointly Gaussian Model</strong><br>When both $S$ and $X$ are jointly Gaussian, the optimal rate depends strictly on the active bottleneck region.</p>
-                
-                <!-- Figure 2 & 3 布局 -->
-                <div class="img-container" style="display: flex; gap: 12px; justify-content: center; margin: 15px 0; width: 100%;">
-                    <!-- Fig 2 容器 -->
-                    <div style="flex: 1; min-width: 180px; text-align: center;">
-                        <img src="images/fig2.png" alt="Figure 2" style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); background-color: #fff;">
-                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 2: $(D_s, D_a)$ 平面的五个工作区域区分图</div>
-                    </div>
-                    <!-- Fig 3 容器 -->
-                    <div style="flex: 1; min-width: 180px; text-align: center;">
-                        <img src="images/fig3.png" alt="Figure 3" style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); background-color: #fff;">
-                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 3: SORDF 3D 表面图及其等高线投影</div>
-                    </div>
-                </div>
-
-                <p><strong>Case 2: Binary Classification</strong><br>For binary Bernoulli states with conditionally Gaussian observations, the optimal rate and threshold weighting $g(x)$ are derived.</p>
-                
-                <!-- Figure 4 & 5 布局 -->
-                <div class="img-container" style="display: flex; gap: 12px; justify-content: center; margin: 15px 0; width: 100%;">
-                    <!-- Fig 4 容器 -->
-                    <div style="flex: 1; min-width: 180px; text-align: center;">
-                        <img src="../figures/fig4_left_gx.png" alt="Figure 4" 
-                             style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
-                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 4: 软权重函数 $g(x)$ 曲线</div>
-                    </div>
-                    <!-- Fig 5 容器 -->
-                    <div style="flex: 1; min-width: 180px; text-align: center;">
-                        <img src="../figures/fig5_joint_rd.png" alt="Figure 5" 
-                             style="width: 100%; max-width: 100%; height: auto; max-height: 200px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; background-color: #fff;">
-                        <div style="font-size: 11px; color: #666; margin-top: 6px; line-height: 1.2;">Fig 5: $R(D_s, D_a)$ 理论上界图</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Column 3: MNIST Replication -->
-        <div class="column">
-            <!-- Box 5: Your MNIST Work -->
-            <!-- 5. MNIST EXPERIMENTAL VERIFICATION -->
-        <div class="card" style="border-top: 4px solid #5d5cd6; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px;">
-        
-        <h2 style="color: #1e293b; font-size: 1.5rem; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: bold;">
-            5. MNIST EXPERIMENTAL VERIFICATION
-        </h2>
-
-        <p style="color: #475569; font-size: 0.95rem; line-height: 1.6; margin-bottom: 15px;">
-            To validate the generalized Information Bottleneck (IB) framework, we design an end-to-end multi-task lossy compression architecture integrating data reconstruction, perceptual quality, and classification accuracy.
-        </p>
-
-        <!-- Problem Modeling Subsection -->
-        <h3 style="color: #334155; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px; font-weight: 600;">
-            Problem Modeling &amp; Constraints
-        </h3>
-        
-        <ul style="color: #475569; font-size: 0.9rem; line-height: 1.5; padding-left: 20px; margin-bottom: 15px;">
-            <li><strong>Input \(X\):</strong> \(28 \times 28\) MNIST image pixels.</li>
-            <li><strong>Semantic Target \(S\):</strong> Digit label \(\{0,1,\dots,9\}\) under Hamming distortion.</li>
-            <li><strong>Rate-Distortion-Perception-Classification (RDPC):</strong> 
-            $$R(D, P, C) = \min_{p_{\hat{X}|X}} I(X; \hat{X})$$
-            $$\text{s.t. } \mathbb{E}[\Delta(X, \hat{X})] \le D, \;\; d(p_X, p_{\hat{X}}) \le P, \;\; H(S|\hat{X}) \le C$$
-            </li>
-        </ul>
-
-        <!-- Joint Loss Function block with purple left border -->
-        <div style="background-color: #f5f3ff; border-left: 4px solid #7c3aed; padding: 15px; margin-bottom: 20px; border-radius: 0 4px 4px 0;">
-            <p style="color: #4c1d95; font-weight: bold; font-size: 0.9rem; margin-top: 0; margin-bottom: 8px;">Joint Loss Function:</p>
-            <div style="font-size: 1.05rem; color: #1e1b4b; text-align: center; margin: 10px 0;">
-            $$\mathcal{L} = \lambda_d \mathcal{L}_{\mathrm{MSE}}(X, \hat{X}) + \lambda_p \mathcal{L}_{\mathrm{Perception}}(p_X, p_{\hat{X}}) + \lambda_c \mathcal{L}_{\mathrm{CE}}(s, \hat{s})$$
-            </div>
-            <p style="color: #5b21b6; font-size: 0.8rem; margin-bottom: 0; line-height: 1.4;">
-            *Where \(\lambda_d, \lambda_p, \lambda_c\) control the tradeoff between pixel reconstruction (MSE), perceptual fidelity (Wasserstein-1 loss), and classification cross-entropy (CE).
-            </p>
-        </div>
-
-        <!-- Implementation Pipeline Subsection -->
-        <h3 style="color: #334155; font-size: 1.1rem; margin-top: 15px; margin-bottom: 10px; font-weight: 600;">
-            Experimental Pipeline
-        </h3>
-        <ol style="color: #475569; font-size: 0.9rem; line-height: 1.6; padding-left: 20px; margin-bottom: 20px;">
-            <li style="margin-bottom: 5px;"><strong>Encoder \(E\):</strong> Maps source image \(X\) into quantized latent features \(Z\) to bound compression rate \(R\).</li>
-            <li style="margin-bottom: 5px;"><strong>Generator \(G\):</strong> Reconstructs \(\hat{X}\) from latent features \(Z\) under joint multi-task gradients.</li>
-            <li style="margin-bottom: 5px;"><strong>Discriminator \(D\):</strong> Jointly trained to minimize Wasserstein-1 distance, enforcing perfect realism and avoiding blurred outputs.</li>
-            <li style="margin-bottom: 5px;"><strong>Classifier \(C\):</strong> Pre-trained and frozen network calculating the classification accuracy and feedback loss.</li>
-        </ol>
-
-        <!-- Results Figure Placeholder (留出的图片位置) -->
-        <h3 style="color: #334155; font-size: 1.1rem; margin-top: 20px; margin-bottom: 10px; font-weight: 600; border-top: 1px dashed #e2e8f0; padding-top: 15px;">
-            Experimental Results
-        </h3>
-        <div style="text-align: center; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 6px; padding: 30px 10px; margin-top: 10px;">
-            <!-- 您可以在此处将 src 替换为您的结果图片，如 figures/mnist_tradeoff.png -->
-            <img src="figures/figure3.png" alt="MNIST Experimental Results Placeholder" style="max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-            <p style="color: #64748b; font-size: 0.85rem; margin-top: 12px; margin-bottom: 0; font-style: italic;">
-            Fig 5: Rate-Distortion-Perception-Classification (RDPC) Tradeoff and Reconstructed Samples on MNIST Dataset.
-            </p>
-        </div>
-
-        </div>
-
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <div class="header">
+    <h1>Semantic Rate-Distortion: From Theory to Deep Learning</h1>
+    <div class="subtitle">
+      Numerical Reproduction of Gaussian &amp; Binary Case Studies &ensp;|&ensp;
+      RDPC Extension on MNIST with Perception &amp; Classification Constraints
     </div>
+    <div class="meta">
+      Based on: Liu, Zhang &amp; Poor (IEEE ISIT 2021) &ensp;&amp;&ensp;
+      Task-Oriented Lossy Compression (IEEE JSAC 2025)
+    </div>
+  </div>
 
-    <!-- Footer -->
-    <footer>
-        References: J. Liu, W. Zhang, and H. V. Poor, "A Rate-Distortion Framework for Characterizing Semantic Information," IEEE, 2021.
-    </footer>
-</div>
+  <!-- ═══════════════ THREE COLUMNS ═══════════════ -->
+  <div class="columns">
+
+    <!-- ──────── COLUMN 1 ──────── -->
+    <div class="col">
+
+      <!-- Problem Formulation -->
+      <div class="block">
+        <div class="block-title navy">1. Problem Formulation: The (S, X) Semantic Source</div>
+        <div class="block-body">
+          <div class="kv-grid">
+            <span class="kv">$S$</span><span>Intrinsic <strong>semantic state</strong> — not directly observable (e.g., digit label)</span>
+            <span class="kv">$X$</span><span>Extrinsic <strong>appearance observation</strong> — what the encoder sees (e.g., image)</span>
+            <span class="kv">$\hat S$</span><span>Reconstructed semantic estimate at decoder</span>
+            <span class="kv">$\hat X$</span><span>Reconstructed appearance at decoder</span>
+          </div>
+          <p><strong>Core Markov Chain:</strong> $S \leftrightarrow X \leftrightarrow (\hat S, \hat X)$</p>
+          <p>The encoder <em>only</em> observes $X$; the decoder must reconstruct <em>both</em> $\hat S$ and $\hat X$ under two distortion constraints:</p>
+          <ul>
+            <li><strong>Semantic distortion:</strong> $d_s(s, \hat s)$ — e.g., Hamming distance, cross-entropy</li>
+            <li><strong>Appearance distortion:</strong> $d_a(x, \hat x)$ — e.g., squared error, MSE</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SORDF Definition -->
+      <div class="block">
+        <div class="block-title navy">2. State-Observation Rate-Distortion Function (SORDF)</div>
+        <div class="block-body">
+          <p>The fundamental limit is the <strong>SORDF</strong>:</p>
+          $$R(D_s, D_a) = \min_{p(\hat s, \hat x|x)} I(X; \hat S, \hat X)$$
+          $$\text{s.t. } \mathbb{E}\,\hat d_s(X, \hat S) \leq D_s,\quad \mathbb{E}\,d_a(X, \hat X) \leq D_a$$
+
+          <p><strong>Theorem 1 (Equivalent Distortion):</strong> The unobservable semantic distortion can be transformed into an observable form:</p>
+          $$
+          \begin{aligned}
+          \mathbb{E}d_S(S^n,\hat{S}^n)
+          &= \sum_{s^n,\hat{s}^n} p(s^n,\hat{s}^n)d_S(s^n,\hat{s}^n) \\
+          &= \sum_{s^n,x^n,\hat{s}^n} p(s^n,x^n,\hat{s}^n)d_S(s^n,\hat{s}^n) \\
+          &\stackrel{(a)}{=} \sum_{s^n,x^n,\hat{s}^n} p(s^n|x^n)p(x^n,\hat{s}^n)d_S(s^n,\hat{s}^n) \\
+          &= \sum_{x^n,\hat{s}^n} p(x^n,\hat{s}^n)\sum_{s^n} p(s^n|x^n)d_S(s^n,\hat{s}^n) \\
+          &\stackrel{(b)}{=} \sum_{x^n,\hat{s}^n} p(x^n,\hat{s}^n)\frac{1}{n}\sum_{i=1}^n \hat{d}_S(x_i,\hat{s}_i),
+          \end{aligned}
+          \tag{10}
+          $$
+                  </div>
+      </div>
+
+      <!-- Binary Classification -->
+      <div class="block">
+        <div class="block-title teal">3. Binary Classification: $R(D_s, \infty)$ (Prop. 5)</div>
+        <div class="block-body">
+          <p><strong>Model:</strong> $S \sim \text{Bernoulli}(1/2)$,&ensp;
+          $X|S=0 \sim \mathcal{N}(A, \sigma^2)$,&ensp;
+          $X|S=1 \sim \mathcal{N}(-A, \sigma^2)$</p>
+
+          <p><strong>Optimal soft decision:</strong></p>
+          $$g(x) = P(\hat S = 0 \mid X = x) = \left[1 + \exp\!\left(\lambda \cdot \frac{1 - e^{-2Ax/\sigma^2}}{1 + e^{-2Ax/\sigma^2}}\right)\right]^{-1}$$
+
+          <p><strong>Rate:</strong>
+          $R(D_s, \infty) = 1 - \frac{1}{2}\int_{-\infty}^{\infty}[N^+(x) + N^-(x)]\, h_2(g(x))\,dx$</p>
+
+          <p>$\lambda < 0$ is solved numerically via bisection from the constraint $\int (N^+ - N^-)g\,dx = 1 - 2D_s$.</p>
+
+          <ul>
+            <li>$D_s = Q(A/\sigma)$ &rarr; $R = 1$ bit (Bayes-optimal hard decision)</li>
+            <li>$D_s = 0.5$ &rarr; $R = 0$ bits (random guessing)</li>
+            <li>As $D_s$ relaxes, $g(x)$ flattens &mdash; less certainty needed</li>
+          </ul>
+
+        </div>
+      </div>
+
+      <!-- Binary Upper Bound -->
+      <div class="block">
+        <div class="block-title teal">4. Finite Appearance: $R(D_s, D_a)$ Upper Bound (Prop. 6)</div>
+        <div class="block-body">
+          <p>A two-stage achievable scheme:</p>
+          $$R(D_s, D_a) \leq \min_{D \in [Q(A/\sigma),\, D_s]} \left\{ R(D, \infty) + \frac{1}{2}\left[\log\frac{\eta}{D_a}\right]^+ \right\}$$
+
+          <ol>
+            <li><strong>Semantic encoding:</strong> compress $X \to \hat S$ at rate $R(D, \infty)$</li>
+            <li><strong>Appearance refinement:</strong> encode residual $X - \mathbb{E}[X|\hat S]$ with Gaussian codebook</li>
+          </ol>
+
+          <p>$\eta = \text{Var}(X \mid \hat S)$ is computed via numerical integration over $g_D(x)$.</p>
+
+        </div>
+      </div>
+
+    </div><!-- /col1 -->
+
+    <!-- ──────── COLUMN 2 ──────── -->
+    <div class="col">
+
+      <!-- Scalar Gaussian -->
+      <div class="block">
+        <div class="block-title navy">5. Scalar Gaussian SORDF (Prop. 3)</div>
+        <div class="block-body">
+          <p>For $(S, X)$ jointly Gaussian (scalar), squared-error distortions:</p>
+          $$R(D_s, D_a) = \frac{1}{2}\max\!\left\{ \left[\log\frac{\Sigma_X}{D_a}\right]^+,\; \left[\log\frac{\Sigma_{SX}^2}{\Sigma_X(D_s - \text{mmse})}\right]^+ \right\}$$
+        </div>
+      </div>
+
+      <!-- Vector Gaussian -->
+      <div class="block">
+        <div class="block-title navy">6. Vector Gaussian: Five-Region Structure (Prop. 4)</div>
+        <div class="block-body">
+          <p><strong>Model:</strong> $X = \mathbf{1}_m S + Z$, where $S \sim \mathcal{N}(0, \sigma_S^2)$, $Z \sim \mathcal{N}(0, \sigma_Z^2 I_m)$.</p>
+          <div style="display:flex; gap:10px; align-items:center; justify-content:center;">
+            <figure style="width:48%; margin:0;">
+              <img src="figures/figure2.png" alt="Five regions" style="width:100%;">
+            </figure>
+            <figure style="width:48%; margin:0;">
+              <img src="figures/scalar_sordf_contour.png" alt="Scalar Gaussian contour" style="width:100%;">
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <!-- RDPC Framework -->
+      <div class="block">
+        <div class="block-title coral">7. From SORDF to RDPC: The Deep Learning Extension</div>
+        <div class="block-body">
+          <p>The 2025 JSAC paper extends classical rate-distortion with <strong>three simultaneous constraints</strong>:</p>
+          $$R(D, P, C) = \min_{p_{\hat X|X}} I(X; \hat X)$$
+          $$\begin{aligned}
+          \text{(1a) Distortion:}&\quad \mathbb{E}[\Delta(X, \hat X)] \leq D \\
+          \text{(1b) Perception:}&\quad d(p_X, p_{\hat X}) \leq P \quad\text{(Wasserstein-1)} \\
+          \text{(1c) Classification:}&\quad H(S \mid \hat X) \leq C \quad\text{(Information Bottleneck)}
+          \end{aligned}$$
+
+          <p><strong>Key Insight — Hamming → Cross-Entropy Degeneration:</strong></p>
+          <p>Replacing Hamming distortion $d_s(s,\hat s) = \mathbf{1}[s \neq \hat s]$ with cross-entropy loss degenerates the semantic constraint into the <strong>Information Bottleneck</strong> form:</p>
+          $$\mathcal{L}_{\text{CE}}(S, \hat S) = -\sum_{c} \mathbf{1}[S=c] \log p(\hat S = c \mid X)$$
+        </div>
+      </div>
+
+      <!-- RDPC Architecture - Compact Version -->
+      <div class="block">
+        <div class="block-title coral">8. RDPC on MNIST: Deep Architecture</div>
+        <div class="block-body">
+
+          <p><strong>End-to-End Pipeline:</strong></p>
+
+          <div class="compact-pipeline">
+            $S$ label → $X$ image → <span>Encoder</span> → $Z$ →
+            <span>Decoder</span> → $\hat X$ →
+            <span class="green">Classifier</span> → $\hat S$
+            <br>
+            <span class="red">Discriminator / WGAN-GP</span> regularizes $\hat X$ for perceptual realism.
+          </div>
+
+          <p><strong>Modules:</strong></p>
+
+          <div class="arch-grid">
+            <div><b>Encoder</b><br>Conv 32→64→128 + FC<br>$Z \in \mathbb{R}^k$</div>
+            <div><b>Decoder</b><br>FC + ConvT 128→64→32→1<br>$\hat X \in [0,1]^{28\times28}$</div>
+            <div><b>Critic</b><br>Conv 32→64→128 + FC<br>WGAN-GP score</div>
+            <div><b>Classifier</b><br>Conv + Pool + FC→10<br>Frozen logits</div>
+          </div>
+
+          <p>
+            <strong>Rate proxy:</strong>
+            $R \approx \frac{1}{2}\sum_{i=1}^{k}\log_2(1+\sigma_i^2)$
+            Smaller bottleneck dimension $k$ gives stronger compression.
+          </p>
+
+        </div>
+      </div>
+
+    </div><!-- /col2 -->
+
+    <!-- ──────── COLUMN 3 ──────── -->
+    <div class="col">
+
+      <!-- Training Strategy -->
+      <div class="block">
+        <div class="block-title coral">9. Loss Function &amp; Alternating Training</div>
+        <div class="block-body">
+          <p><strong>Joint Lagrangian relaxation:</strong></p>
+          $$\mathcal{L}_{\text{train}} = \underbrace{\lambda_d \cdot \text{MSE}(X, \hat X)}_{\text{Distortion (1a)}} \;-\; \underbrace{\lambda_p \cdot \mathbb{E}[D(\hat X)]}_{\text{Perception (1b)}} \;+\; \underbrace{\lambda_c \cdot \text{CE}(S, \hat S)}_{\text{Classification (1c)}}$$
+
+          <p><strong>WGAN-GP alternating schedule:</strong></p>
+          <table>
+            <tr><th>Step</th><th>Networks</th><th>Loss</th></tr>
+            <tr>
+              <td>Critic (&times;5)</td>
+              <td>Discriminator</td>
+              <td>$W_1 = \mathbb{E}[D(\hat X)] - \mathbb{E}[D(X)] + 10 \cdot \text{GP}$</td>
+            </tr>
+            <tr>
+              <td>Generator (&times;1)</td>
+              <td>Encoder + Decoder</td>
+              <td>$\lambda_d \text{MSE} - \lambda_p \mathbb{E}[D(\hat X)] + \lambda_c \text{CE}$</td>
+            </tr>
+          </table>
+
+          <p><strong>Gradient Penalty (GP):</strong> enforces 1-Lipschitz constraint on the critic via random interpolations $\tilde x = \epsilon x + (1-\epsilon)\hat x$:</p>
+          $$\text{GP} = \mathbb{E}_{\tilde x}\left[(\|\nabla_{\tilde x} D(\tilde x)\|_2 - 1)^2\right]$$
+
+          <p><strong>Classifier Pretraining:</strong> 5 epochs on real MNIST &rarr; 96.55% test accuracy, then frozen.</p>
+        </div>
+      </div>
+      <!-- Results -->
+      <div class="block">
+        <div class="block-title coral">10. RDPC Experimental Results (k=8)</div>
+        <div class="block-body">
+          <table>
+            <tr><th>Epoch</th><th>Rate $R$ (bits)</th><th>MSE</th><th>Accuracy</th></tr>
+            <tr><td>1</td><td>14.90</td><td>50.79</td><td>96.62%</td></tr>
+            <tr><td>3</td><td>20.51</td><td>36.07</td><td>97.84%</td></tr>
+            <tr><td>5</td><td>22.21</td><td>32.88</td><td>98.26%</td></tr>
+            <tr><td>7</td><td>23.42</td><td>30.95</td><td>98.31%</td></tr>
+            <tr><td>9</td><td>24.18</td><td>29.46</td><td>98.29%</td></tr>
+            <tr style="background:#fef3c7;"><td><strong>10</strong></td><td><strong>24.86</strong></td><td><strong>29.52</strong></td><td><strong>98.49%</strong></td></tr>
+          </table>
+
+          <p><strong>Key Observations:</strong></p>
+          <ol>
+            <li><strong>Information Bottleneck effect:</strong> classification accuracy (98.49%) on compressed reconstructions <em>exceeds</em> accuracy on real images (96.55%) — the autoencoder implicitly filters out classification-irrelevant pixel noise.</li>
+            <li><strong>Rate-Distortion-Classifcation tradeoff:</strong> $R \uparrow$ from 14.90 to 24.86 bits, MSE $\downarrow$ from 50.79 to 29.52, Accuracy $\uparrow$ from 96.62% to 98.49%.</li>
+            <li><strong>Synergy of three constraints:</strong> MSE drives pixel fidelity, WGAN-GP drives distributional realism, cross-entropy preserves semantic discriminability.</li>
+          </ol>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="alert-block">
+        <div class="alert-title">Summary &amp; Contributions</div>
+        <div class="alert-body">
+          <ul>
+            <li><strong>Theory (RD):</strong> Full numerical reproduction of the 2021 ISIT semantic rate-distortion framework — 26 automated verification tests encoding paper theorems as executable checks.</li>
+            <li><strong>Extension (RDPC):</strong> Degenerated Hamming distortion to cross-entropy, added WGAN-GP perception constraint, and implemented joint Distortion-Perception-Classification compression on MNIST.</li>
+            <li><strong>Connection:</strong> Demonstrated that when $\lambda_p = 0$, RDPC reduces to Variational Information Bottleneck (VIB) — bridging classical rate-distortion theory with modern deep learning.</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- /col3 -->
+
+  </div><!-- /columns -->
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <div class="footer">
+    <strong>Papers:</strong>
+    J. Liu, W. Zhang &amp; H. V. Poor, "A Rate-Distortion Framework for Characterizing Semantic Information," <em>IEEE ISIT</em>, 2021 &ensp;|&ensp;
+    "Task-Oriented Lossy Compression With Data, Perception, and Classification Constraints," <em>IEEE JSAC</em>, 2025
+    &ensp;|&ensp;
+    <strong>Code:</strong> <code>rd-semantic-repro/</code> &amp; <code>rdpc_mnist/</code>
+    &ensp;|&ensp;
+    <strong>Tests:</strong> 26 passed (RD) + 6 passed (RDPC models)
+  </div>
+
+</div><!-- /poster -->
 
 </body>
 </html>

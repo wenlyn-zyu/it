@@ -29,9 +29,7 @@ if __name__ == "__main__":
             rate_values.append(float(row["rate_bits"]))
 
     plt.figure(figsize=(6, 4))
-    plt.plot(ds_values, rate_values, linewidth=2,label='Soft (optimal)')
-
-    plt.plot(ds_naive, rate_naive, 'orange', linewidth=2, label='Hard (naive)')
+    plt.plot(ds_values, rate_values, linewidth=2, label='Soft (optimal)')
     plt.legend()
     plt.xlabel("Semantic distortion $D_s$")
     plt.ylabel(r"$R(D_s, \infty)$ [bits]")

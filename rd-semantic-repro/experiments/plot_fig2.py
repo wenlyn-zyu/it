@@ -203,6 +203,16 @@ def draw_figure_3():
 # 5. 执行绘图
 # ==========================================
 if __name__ == '__main__':
+    from pathlib import Path
+    output_dir = Path("figures")
+    output_dir.mkdir(exist_ok=True)
+
     draw_figure_2()
+    plt.savefig(output_dir / "fig2_five_regions.png", dpi=200, bbox_inches='tight')
+    plt.close()
+    print("Saved fig2_five_regions.png")
+
     draw_figure_3()
-    plt.show()
+    plt.savefig(output_dir / "fig3_sordf_3d_contour.png", dpi=200, bbox_inches='tight')
+    plt.close()
+    print("Saved fig3_sordf_3d_contour.png")
