@@ -622,7 +622,7 @@ window.MathJax = {
             <span class="kv">$\hat X$</span><span>Reconstructed appearance at decoder</span>
           </div>
           <p><strong>Core Markov Chain:</strong> $S \leftrightarrow X \leftrightarrow (\hat S, \hat X)$</p>
-          <p>The encoder <em>only</em> observes $X$; the decoder must reconstruct <em>both</em> $\hat S$ and $\hat X$ under two distortion constraints:</p>
+          <p>Encoder <em>only</em> observes $X$; the decoder reconstruct <em>both</em> $\hat S$ and $\hat X$ under two distortion constraints:</p>
           <ul>
             <li><strong>Semantic distortion:</strong> $d_s(s, \hat s)$ — e.g., Hamming distance, cross-entropy</li>
             <li><strong>Appearance distortion:</strong> $d_a(x, \hat x)$ — e.g., squared error, MSE</li>

@@ -420,12 +420,32 @@ $k$ & $\lambda_p$ & $\lambda_c$ & Rate (bits) & MSE & Acc (\%) \\
 \label{fig:rdpc-lambda}
 \end{figure}
 
+Besides the quantitative trade-off curves, we also examine the visual quality of the reconstructed images. Figures~\ref{fig:recon8} and~\ref{fig:recon16} compare the original MNIST digits (top row) with the corresponding RDPC reconstructions (bottom row) under two representative bottleneck dimensions.
+
+For both latent dimensions, the reconstructed digits remain visually recognizable, indicating that the semantic information required for digit classification is largely preserved despite compression. Although some stroke details become smoother after reconstruction, the pretrained classifier still achieves high recognition accuracy, consistent with the quantitative results in Table~\ref{tab:sweep}.
+
+Increasing the latent dimension from $k=8$ to $k=16$ leads to only modest improvements in visual appearance, while the classification accuracy changes very little. This observation qualitatively supports the SORDF intuition that additional coding resources are primarily used to improve appearance fidelity once the semantic information has already been captured.
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{../figures/fig9.png}
+\caption{Qualitative reconstruction results of the proposed RDPC model with latent dimension $k=8$. The first row shows the original MNIST digits, while the second row shows the corresponding reconstructed images. Despite the compact bottleneck, the semantic identity of each digit is well preserved.}
+\label{fig:recon8}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\columnwidth]{../figures/fig10.png}
+\caption{Qualitative reconstruction results with latent dimension $k=16$. Compared with $k=8$, the visual quality improves only slightly, suggesting that increasing the bottleneck mainly enhances appearance fidelity while providing limited additional semantic benefit.}
+\label{fig:recon16}
+\end{figure}
+
 Several observations emerge:
 \begin{enumerate}
     \item \textbf{Rate-dimension relationship}: The estimated rate increases with latent dimension $k$, consistent with the Gaussian entropy proxy in (\ref{eq:rate-proxy}). Moving from $k=4$ to $k=64$ increases the rate proxy from roughly 10 bits to 180 bits.
     \item \textbf{Distortion-rate behavior}: Higher latent dimension generally reduces MSE. The representative high-rate configuration $k=64$ has MSE 12.21, while the low-rate $k=4$ configurations have MSE above 31.
     \item \textbf{Classification robustness}: The classification accuracy remains above 97\% for all representative configurations in Table~\ref{tab:sweep}, demonstrating that semantic information can be preserved even when the reconstruction MSE varies substantially.
     \item \textbf{Three-way tradeoff}: At fixed rate (e.g., $k=16$), varying $(\lambda_p, \lambda_c)$ traces a two-dimensional tradeoff surface. Higher $\lambda_p$ pushes reconstructions toward the data manifold through the critic, while higher $\lambda_c$ pushes them toward classifier-stable semantic content. These objectives can conflict with pixel MSE.
+    \item \textbf{Qualitative semantic preservation}: Figures~\ref{fig:recon8} and~\ref{fig:recon16} show that the reconstructed digits remain visually recognizable across different bottleneck dimensions. Increasing the latent dimension from $k=8$ to $k=16$ leads to only limited perceptual improvement, while the semantic identity of each digit is already preserved at the smaller bottleneck. This qualitative evidence complements the quantitative accuracy results and supports the semantic communication principle that semantic information can be retained using substantially fewer coding resources than appearance information.
 \end{enumerate}
 
 \section{Implementation and Testing Methodology}
