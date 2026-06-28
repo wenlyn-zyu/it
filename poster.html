@@ -60,27 +60,22 @@
      ========================= */
 
   .poster {
-    width: min(1440px, calc(100vw - 48px));
-    aspect-ratio: 3 / 2;
-
-    background:
-      linear-gradient(90deg, rgba(23, 63, 58, 0.04) 1px, transparent 1px),
-      linear-gradient(0deg, rgba(23, 63, 58, 0.035) 1px, transparent 1px),
-      var(--paper);
-    background-size: 36px 36px;
-
-    border: 1px solid rgba(17, 24, 39, 0.18);
-    border-radius: 10px;
-    box-shadow: 0 28px 70px rgba(17, 24, 39, 0.24);
-
-    padding: 22px;
-
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    gap: 14px;
-
-    overflow: hidden;
-  }
+        width: min(1440px, calc(100vw - 56px));
+        aspect-ratio: 3 / 2;
+        background:
+            linear-gradient(90deg, rgba(23,63,58,0.04) 1px, transparent 1px),
+            linear-gradient(0deg, rgba(23,63,58,0.035) 1px, transparent 1px),
+            var(--paper);
+        background-size: 36px 36px;
+        border: 1px solid rgba(17,24,39,0.18);
+        border-radius: 10px;
+        box-shadow: 0 28px 70px rgba(17,24,39,0.24);
+        padding: 30px;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        gap: 18px;
+        overflow: hidden;
+    }
 
   /* =========================
      Header
@@ -620,10 +615,6 @@ window.MathJax = {
       <div class="block">
         <div class="block-title navy">1. Problem Formulation: The (S, X) Semantic Source</div>
         <div class="block-body">
-          <p>
-            A memoryless information source is modeled as a tuple of random variables
-            $(S, X) \sim p(s, x)$:
-          </p>
           <div class="kv-grid">
             <span class="kv">$S$</span><span>Intrinsic <strong>semantic state</strong> — not directly observable (e.g., digit label)</span>
             <span class="kv">$X$</span><span>Extrinsic <strong>appearance observation</strong> — what the encoder sees (e.g., image)</span>
@@ -648,9 +639,18 @@ window.MathJax = {
           $$\text{s.t. } \mathbb{E}\,\hat d_s(X, \hat S) \leq D_s,\quad \mathbb{E}\,d_a(X, \hat X) \leq D_a$$
 
           <p><strong>Theorem 1 (Equivalent Distortion):</strong> The unobservable semantic distortion can be transformed into an observable form:</p>
-          $$\hat d_s(x, \hat s) = \frac{1}{p(x)}\sum_s p(s, x)\, d_s(s, \hat s) = \mathbb{E}[d_s(S, \hat s) \mid X = x]$$
-
-        </div>
+          $$
+          \begin{aligned}
+          \mathbb{E}d_S(S^n,\hat{S}^n)
+          &= \sum_{s^n,\hat{s}^n} p(s^n,\hat{s}^n)d_S(s^n,\hat{s}^n) \\
+          &= \sum_{s^n,x^n,\hat{s}^n} p(s^n,x^n,\hat{s}^n)d_S(s^n,\hat{s}^n) \\
+          &\stackrel{(a)}{=} \sum_{s^n,x^n,\hat{s}^n} p(s^n|x^n)p(x^n,\hat{s}^n)d_S(s^n,\hat{s}^n) \\
+          &= \sum_{x^n,\hat{s}^n} p(x^n,\hat{s}^n)\sum_{s^n} p(s^n|x^n)d_S(s^n,\hat{s}^n) \\
+          &\stackrel{(b)}{=} \sum_{x^n,\hat{s}^n} p(x^n,\hat{s}^n)\frac{1}{n}\sum_{i=1}^n \hat{d}_S(x_i,\hat{s}_i),
+          \end{aligned}
+          \tag{10}
+          $$
+                  </div>
       </div>
 
       <!-- Binary Classification -->
@@ -675,10 +675,6 @@ window.MathJax = {
             <li>As $D_s$ relaxes, $g(x)$ flattens &mdash; less certainty needed</li>
           </ul>
 
-          <figure>
-            <img src="figures/binary_soft_decision_a1_sigma1.png" alt="Soft decision g(x)">
-            <figcaption>Soft decision $g(x)$ becomes sharper as $D_s$ approaches Bayes error</figcaption>
-          </figure>
         </div>
       </div>
 
@@ -696,10 +692,6 @@ window.MathJax = {
 
           <p>$\eta = \text{Var}(X \mid \hat S)$ is computed via numerical integration over $g_D(x)$.</p>
 
-          <figure>
-            <img src="figures/binary_upper_bound_a2sqrt10_sigma1.png" alt="Upper bound">
-            <figcaption>Achievable upper bound vs. optimal (S known) and naive (ignore S) baselines</figcaption>
-          </figure>
         </div>
       </div>
 
@@ -727,7 +719,6 @@ window.MathJax = {
           <p><strong>Model:</strong> $X = \mathbf{1}_m S + Z$, where $S \sim \mathcal{N}(0, \sigma_S^2)$, $Z \sim \mathcal{N}(0, \sigma_Z^2 I_m)$.</p>
           <figure>
             <img src="figures/figure2.png" alt="Five regions" style="max-width:48%;">
-            <img src="figures/gaussian_vector_sordf_m2_contour.png" alt="Vector contour" style="max-width:48%;">
           </figure>
         </div>
       </div>
@@ -747,8 +738,6 @@ window.MathJax = {
           <p><strong>Key Insight — Hamming → Cross-Entropy Degeneration:</strong></p>
           <p>Replacing Hamming distortion $d_s(s,\hat s) = \mathbf{1}[s \neq \hat s]$ with cross-entropy loss degenerates the semantic constraint into the <strong>Information Bottleneck</strong> form:</p>
           $$\mathcal{L}_{\text{CE}}(S, \hat S) = -\sum_{c} \mathbf{1}[S=c] \log p(\hat S = c \mid X)$$
-
-          <p>When $\lambda_p = 0$, the framework reduces exactly to <strong>Variational Information Bottleneck (VIB)</strong>.</p>
         </div>
       </div>
 
